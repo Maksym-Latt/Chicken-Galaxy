@@ -10,9 +10,10 @@ interface PlayerRepository {
     suspend fun addPoints(delta: Int)
     suspend fun trySpend(cost: Int): Boolean
 
-    suspend fun setShipLevel(level: Int)
-    suspend fun setGameLevel(level: Int)
+    suspend fun setEggBlasterLevel(level: Int)
+    suspend fun setFeatherShieldLevel(level: Int)
 
+    suspend fun setPlayerLevel(level: Int)
     suspend fun addExperience(expDelta: Int): LevelUpResult
 
     fun requiredForLevel(level: Int): Int

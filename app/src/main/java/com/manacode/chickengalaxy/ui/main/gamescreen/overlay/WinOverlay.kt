@@ -1,125 +1,106 @@
-package com.manacode.feedthechick.ui.main.gamescreen.overlay
+package com.manacode.chickengalaxy.ui.main.gamescreen.overlay
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Share
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.manacode.feedthechick.R
-import com.manacode.feedthechick.ui.main.component.GradientOutlinedText
-import com.manacode.feedthechick.ui.main.component.OrangePrimaryButton
-import com.manacode.feedthechick.ui.main.component.SecondaryIconButton
-import com.manacode.feedthechick.ui.main.component.StartPrimaryButton
+import com.manacode.chickengalaxy.ui.main.component.GradientOutlinedText
+import com.manacode.chickengalaxy.ui.main.component.OrangePrimaryButton
+import com.manacode.chickengalaxy.ui.main.component.StartPrimaryButton
+import com.manacode.chickengalaxy.ui.main.gamescreen.GameResult
 
 @Composable
 fun WinOverlay(
-    score: Int,
-    onShare: () -> Unit,
-    onHome: () -> Unit,
-    onRetry: () -> Unit
+    result: GameResult,
+    onPlayAgain: () -> Unit,
+    onMenu: () -> Unit,
+    onOpenSkins: () -> Unit
 ) {
-    // ----------------------- Overlay -----------------------
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xcd000000)),
+            .background(Color(0xCC02020A)),
+        contentAlignment = Alignment.Center
     ) {
-
-        // ----------------------- Share button (top right) -----------------------
-        Row(
+        val shape = RoundedCornerShape(28.dp)
+        Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .statusBarsPadding()
-                .padding(24.dp),
-            horizontalArrangement = Arrangement.End
-        ) {
-            SecondaryIconButton(
-                onClick = onShare,
-                modifier = Modifier.size(64.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Share,
-                    contentDescription = "Share result",
-                    tint = Color.White,
-                    modifier = Modifier.fillMaxSize(0.75f)
+                .fillMaxWidth(0.85f)
+                .clip(shape)
+                .background(
+                    Brush.verticalGradient(
+                        listOf(Color(0xFF251444), Color(0xFF0D0824))
+                    )
                 )
-            }
-        }
-
-        // ----------------------- Card -----------------------
-        Column(
-            modifier = Modifier
-                .align(Alignment.Center)
-                .padding(horizontal = 32.dp, vertical = 36.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+                .padding(horizontal = 24.dp, vertical = 28.dp)
         ) {
-
-            // ----------------------- Title -----------------------
-            GradientOutlinedText(
-                text = "GAME OVER",
-                fontSize = 40.sp,
-                gradientColors = listOf(Color(0xFFFFE3A1), Color(0xFFFF9D52))
-            )
-
-            // ----------------------- Chick -----------------------
-            Image(
-                painter = painterResource(id = R.drawable.chicken_win),
-                contentDescription = null,
-                modifier = Modifier.size(320.dp),
-                contentScale = ContentScale.Fit
-            )
-
-            // ----------------------- Subtitle -----------------------
-            GradientOutlinedText(
-                text = "You fed $score seeds!",
-                fontSize = 28.sp,
-                gradientColors = listOf(Color(0xFFFFF4C2), Color(0xFFFFC66E))
-            )
-
-            // ----------------------- Buttons bottom -----------------------
             Column(
-                verticalArrangement = Arrangement.spacedBy(12.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.padding(top = 8.dp)
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                OrangePrimaryButton(
-                    text = "Menu",
-                    modifier = Modifier.width(240.dp),
-                    onClick = onHome
+                GradientOutlinedText(
+                    text = "Good Job!",
+                    fontSize = 36.sp,
+                    gradientColors = listOf(Color.White, Color(0xFFFFE082))
                 )
+
+                ResultRow(label = "Score", value = result.score.toString())
+                ResultRow(label = "Survival", value = formatTime(result.timeSeconds))
+                ResultRow(label = "Eggs", value = result.bonusEggs.toString())
+                ResultRow(label = "Enemies down", value = result.enemiesDown.toString())
+
+                Spacer(Modifier.height(8.dp))
+
                 StartPrimaryButton(
-                    text =  "Play again",
-                    modifier = Modifier.width(240.dp),
-                    onClick = onRetry
+                    text = "Play Again",
+                    onClick = onPlayAgain,
+                    modifier = Modifier.fillMaxWidth(0.8f)
+                )
+                OrangePrimaryButton(
+                    text = "Return to Menu",
+                    onClick = onMenu,
+                    modifier = Modifier.fillMaxWidth(0.8f)
+                )
+                OrangePrimaryButton(
+                    text = "Visit Skins",
+                    onClick = onOpenSkins,
+                    modifier = Modifier.fillMaxWidth(0.8f)
                 )
             }
         }
     }
+}
+
+@Composable
+private fun ResultRow(label: String, value: String) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(text = label, color = Color(0xFFB3C6FF), fontSize = 16.sp)
+        Text(text = value, color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.Bold)
+    }
+}
+
+private fun formatTime(totalSeconds: Int): String {
+    val minutes = totalSeconds / 60
+    val seconds = totalSeconds % 60
+    return "%02d:%02d".format(minutes, seconds)
 }

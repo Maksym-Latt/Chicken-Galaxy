@@ -123,6 +123,26 @@ class DefaultAudioController @Inject constructor(
         soundVolume = percent.toVolume()
     }
 
+    override fun playMagnetPurchase() {
+        playEffect(SoundEffect.SHIP_PURCHASE)
+    }
+
+    override fun playNotEnoughMoney() {
+        playEffect(SoundEffect.NOT_ENOUGH_MONEY)
+    }
+
+    override fun playEggPickup() {
+        playEffect(SoundEffect.HIT)
+    }
+
+    override fun playRockPickup() {
+        playEffect(SoundEffect.MISS)
+    }
+
+    override fun playBombHit() {
+        playEffect(SoundEffect.EXPLOSION)
+    }
+
     override fun playGameWin() {
         playEffect(SoundEffect.WIN)
     }

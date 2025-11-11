@@ -1,4 +1,4 @@
-package com.manacode.chickengalaxy.ui.main.magnetshop
+package com.manacode.chickengalaxy.ui.main.upgrades
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -20,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -27,49 +28,55 @@ import androidx.compose.ui.unit.sp
 import com.manacode.chickengalaxy.ui.main.component.OrangePrimaryButton
 
 @Composable
- fun NoMoneyDialog(onDismiss: () -> Unit) {
+fun NoMoneyDialog(onDismiss: () -> Unit) {
     Box(
         Modifier
             .fillMaxSize()
-            .background(Color(0x99000000))
+            .background(Color(0xAA05040F))
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null
             ) { onDismiss() }
     ) {
+        val shape = RoundedCornerShape(20.dp)
+        val gradient = Brush.verticalGradient(
+            listOf(Color(0xFFFFF8E1), Color(0xFFFFD180))
+        )
         Box(
             modifier = Modifier
                 .align(Alignment.Center)
                 .width(300.dp)
                 .wrapContentHeight()
-                .clip(RoundedCornerShape(18.dp))
-                .background(Color(0xFFEAFBFF))
-                .border(2.dp, Color(0xFF10829A), RoundedCornerShape(18.dp))
-                .padding(all = 16.dp)
+                .clip(shape)
+                .background(gradient)
+                .border(2.dp, Color(0xFF4E342E), shape)
+                .padding(all = 20.dp)
                 .clickable(
                     interactionSource = remember { MutableInteractionSource() },
                     indication = null
-                ) { /* consume */ }
+                ) {}
         ) {
             Column(
                 Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "Oops!",
+                    text = "Out of corn!",
                     fontSize = 24.sp,
                     fontWeight = FontWeight.ExtraBold,
-                    color = Color(0xFF0E3E49)
+                    color = Color(0xFF4E342E)
                 )
                 Spacer(Modifier.height(8.dp))
                 Text(
-                    text = "Not enough points to purchase.",
+                    text = "Collect more eggs in battle to afford this upgrade.",
                     fontSize = 16.sp,
-                    color = Color(0xFF0E3E49)
+                    color = Color(0xFF4E342E),
+                    lineHeight = 20.sp,
+                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
                 )
                 Spacer(Modifier.height(16.dp))
                 OrangePrimaryButton(
-                    text = "OK",
+                    text = "Got it",
                     onClick = onDismiss,
                     modifier = Modifier.fillMaxWidth(0.6f)
                 )

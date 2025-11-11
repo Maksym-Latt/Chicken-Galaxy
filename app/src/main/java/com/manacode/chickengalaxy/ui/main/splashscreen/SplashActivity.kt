@@ -1,4 +1,4 @@
-package com.manacode.eggmagnet.ui.main.splashscreen
+package com.manacode.chickengalaxy.ui.main.splashscreen
 
 import android.content.Intent
 import android.os.Bundle
@@ -14,7 +14,7 @@ import androidx.compose.runtime.getValue
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
-import com.manacode.eggmagnet.MainActivity
+import com.manacode.chickengalaxy.MainActivity
 
 @AndroidEntryPoint
 class SplashActivity : ComponentActivity() {

@@ -1,4 +1,4 @@
-package com.manacode.feedthechick.ui.main.component
+package com.manacode.chickengalaxy.ui.main.component
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -27,7 +27,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.manacode.feedthechick.R
+import com.manacode.chickengalaxy.R
 import kotlinx.coroutines.delay
 
 @Composable

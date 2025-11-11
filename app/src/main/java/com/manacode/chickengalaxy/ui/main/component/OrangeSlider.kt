@@ -1,4 +1,4 @@
-package com.manacode.feedthechick.ui.main.component
+package com.manacode.chickengalaxy.ui.main.component
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.detectDragGestures
