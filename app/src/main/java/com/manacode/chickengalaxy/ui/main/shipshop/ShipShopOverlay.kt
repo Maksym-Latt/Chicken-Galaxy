@@ -1,4 +1,4 @@
-package com.manacode.eggmagnet.ui.main.magnetshop
+package com.manacode.chickengalaxy.ui.main.magnetshop
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -40,14 +40,14 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.manacode.chickengalaxy.ShipConfig
-import com.manacode.eggmagnet.R
-import com.manacode.eggmagnet.data.model.MagnetConfig
-import com.manacode.eggmagnet.ui.main.component.GradientOutlinedText
-import com.manacode.eggmagnet.ui.main.component.OrangePrimaryButton
-import com.manacode.eggmagnet.ui.main.component.SecondaryBackButton
-import com.manacode.eggmagnet.ui.main.gamescreen.engine.SpawnWeights
-import com.manacode.eggmagnet.ui.main.gamescreen.spawnWeightsForMagnet
-import com.manacode.eggmagnet.ui.main.menuscreen.PlayerViewModel
+import com.manacode.chickengalaxy.R
+import com.manacode.chickengalaxy.data.model.MagnetConfig
+import com.manacode.chickengalaxy.ui.main.component.GradientOutlinedText
+import com.manacode.chickengalaxy.ui.main.component.OrangePrimaryButton
+import com.manacode.chickengalaxy.ui.main.component.SecondaryBackButton
+import com.manacode.chickengalaxy.ui.main.gamescreen.engine.SpawnWeights
+import com.manacode.chickengalaxy.ui.main.gamescreen.spawnWeightsForMagnet
+import com.manacode.chickengalaxy.ui.main.menuscreen.PlayerViewModel
 
 
 @Composable

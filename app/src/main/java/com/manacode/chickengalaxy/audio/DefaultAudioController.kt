@@ -1,4 +1,4 @@
-package com.manacode.eggmagnet.audio
+package com.manacode.chickengalaxy.audio
 
 import android.content.Context
 import android.media.AudioAttributes
@@ -7,7 +7,7 @@ import android.media.SoundPool
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
-import com.manacode.eggmagnet.data.settings.SettingsRepository
+import com.manacode.chickengalaxy.data.settings.SettingsRepository
 
 @Singleton
 class DefaultAudioController @Inject constructor(

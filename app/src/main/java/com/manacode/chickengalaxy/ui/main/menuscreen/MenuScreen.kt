@@ -1,4 +1,4 @@
-package com.manacode.eggmagnet.ui.main.menuscreen
+package com.manacode.chickengalaxy.ui.main.menuscreen
 
 import android.graphics.Typeface
 import androidx.compose.animation.animateColorAsState
@@ -45,15 +45,15 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.res.ResourcesCompat
-import com.manacode.eggmagnet.R
+import com.manacode.chickengalaxy.R
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.manacode.eggmagnet.ui.main.component.GradientOutlinedText
-import com.manacode.eggmagnet.ui.main.component.SecondaryIconButton
-import com.manacode.eggmagnet.ui.main.component.StartPrimaryButton
+import com.manacode.chickengalaxy.ui.main.component.GradientOutlinedText
+import com.manacode.chickengalaxy.ui.main.component.SecondaryIconButton
+import com.manacode.chickengalaxy.ui.main.component.StartPrimaryButton
 @Composable
 fun MenuScreen(
     onStartGame: () -> Unit,

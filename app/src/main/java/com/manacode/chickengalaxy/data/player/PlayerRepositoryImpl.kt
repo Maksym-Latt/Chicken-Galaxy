@@ -1,8 +1,8 @@
-package com.manacode.eggmagnet.data.player
+package com.manacode.chickengalaxy.data.player
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.manacode.eggmagnet.data.model.PlayerState
+import com.manacode.chickengalaxy.data.model.PlayerState
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow

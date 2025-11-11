@@ -1,4 +1,4 @@
-package com.manacode.eggmagnet.data.settings
+package com.manacode.chickengalaxy.data.settings
 
 import android.content.SharedPreferences
 import javax.inject.Inject

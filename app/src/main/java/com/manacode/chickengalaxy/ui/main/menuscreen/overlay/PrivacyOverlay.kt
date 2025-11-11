@@ -1,4 +1,4 @@
-package com.manacode.eggmagnet.ui.main.menuscreen.overlay
+package com.manacode.chickengalaxy.ui.main.menuscreen.overlay
 
 import android.content.Intent
 import android.net.Uri
@@ -35,9 +35,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.manacode.eggmagnet.ui.main.component.GradientOutlinedText
-import com.manacode.eggmagnet.ui.main.component.OrangePrimaryButton
-import com.manacode.eggmagnet.ui.main.component.SecondaryBackButton
+import com.manacode.chickengalaxy.ui.main.component.GradientOutlinedText
+import com.manacode.chickengalaxy.ui.main.component.OrangePrimaryButton
+import com.manacode.chickengalaxy.ui.main.component.SecondaryBackButton
 
 @Composable
 fun PrivacyOverlay(
@@ -126,8 +126,8 @@ fun PrivacyOverlay(
 
                         SectionTitle("Contact")
                         ClickableLink(
-                            text = "support@eggmagnet.app",
-                            url = "mailto:support@eggmagnet.app"
+                            text = "support@chickengalaxy.app",
+                            url = "mailto:support@chickengalaxy.app"
                         )
                         ClickableLink(
                             text = "Website",

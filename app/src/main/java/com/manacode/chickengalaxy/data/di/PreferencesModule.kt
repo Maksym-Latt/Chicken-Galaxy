@@ -1,13 +1,13 @@
-package com.manacode.eggmagnet.data.di
+package com.manacode.chickengalaxy.data.di
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.manacode.eggmagnet.data.player.DefaultSkinCatalog
-import com.manacode.eggmagnet.data.player.PlayerRepository
-import com.manacode.eggmagnet.data.player.PlayerRepositoryImpl
-import com.manacode.eggmagnet.data.player.SkinCatalog
-import com.manacode.eggmagnet.data.settings.SettingsRepository
-import com.manacode.eggmagnet.data.settings.SettingsRepositoryImpl
+import com.manacode.chickengalaxy.data.player.DefaultSkinCatalog
+import com.manacode.chickengalaxy.data.player.PlayerRepository
+import com.manacode.chickengalaxy.data.player.PlayerRepositoryImpl
+import com.manacode.chickengalaxy.data.player.SkinCatalog
+import com.manacode.chickengalaxy.data.settings.SettingsRepository
+import com.manacode.chickengalaxy.data.settings.SettingsRepositoryImpl
 import dagger.Binds
 import dagger.Module
 import dagger.Provides

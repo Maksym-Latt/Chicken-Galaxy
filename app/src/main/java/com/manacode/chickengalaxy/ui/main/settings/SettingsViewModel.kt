@@ -1,9 +1,9 @@
-package com.manacode.eggmagnet.ui.main.settings
+package com.manacode.chickengalaxy.ui.main.settings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.manacode.eggmagnet.audio.AudioController
-import com.manacode.eggmagnet.data.settings.SettingsRepository
+import com.manacode.chickengalaxy.audio.AudioController
+import com.manacode.chickengalaxy.data.settings.SettingsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

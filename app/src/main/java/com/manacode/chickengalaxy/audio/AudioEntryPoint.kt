@@ -1,4 +1,4 @@
-package com.manacode.eggmagnet.audio
+package com.manacode.chickengalaxy.audio
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember

@@ -1,6 +1,6 @@
-package com.manacode.eggmagnet.data.player
+package com.manacode.chickengalaxy.data.player
 
-import com.manacode.eggmagnet.data.model.PlayerState
+import com.manacode.chickengalaxy.data.model.PlayerState
 import kotlinx.coroutines.flow.Flow
 
 interface PlayerRepository {

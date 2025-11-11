@@ -69,7 +69,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import com.manacode.eggmagnet.audio.rememberAudioController
+import com.manacode.chickengalaxy.audio.rememberAudioController
 import kotlinx.coroutines.delay
 import kotlin.math.roundToInt
 import kotlin.random.Random

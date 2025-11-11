@@ -1,12 +1,13 @@
-package com.manacode.eggmagnet.ui.main.menuscreen
+package com.manacode.chickengalaxy.ui.main.menuscreen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.manacode.eggmagnet.audio.AudioController
-import com.manacode.eggmagnet.data.model.MagnetLevel
-import com.manacode.eggmagnet.data.model.ShipLevel
-import com.manacode.eggmagnet.data.player.PlayerRepository
-import com.manacode.eggmagnet.data.player.SkinCatalog
+import com.manacode.chickengalaxy.audio.AudioController
+import com.manacode.chickengalaxy.data.model.MagnetLevel
+import com.manacode.chickengalaxy.data.model.ShipLevel
+import com.manacode.chickengalaxy.data.player.PlayerRepository
+import com.manacode.chickengalaxy.data.player.SkinCatalog
+import com.manacode.eggmagnet.ui.main.menuscreen.PlayerUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow

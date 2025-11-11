@@ -1,7 +1,7 @@
-package com.manacode.eggmagnet.ui.main.menuscreen
+package com.manacode.chickengalaxy.ui.main.menuscreen
 
 import androidx.lifecycle.ViewModel
-import com.manacode.eggmagnet.audio.AudioController
+import com.manacode.chickengalaxy.audio.AudioController
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

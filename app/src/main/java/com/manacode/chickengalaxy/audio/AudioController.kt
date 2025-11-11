@@ -1,4 +1,4 @@
-package com.manacode.eggmagnet.audio
+package com.manacode.chickengalaxy.audio
 
 interface AudioController {
     fun playMenuMusic()

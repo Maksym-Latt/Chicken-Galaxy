@@ -1,4 +1,4 @@
-package com.manacode.eggmagnet.audio
+package com.manacode.chickengalaxy.audio
 
 import dagger.Binds
 import dagger.Module

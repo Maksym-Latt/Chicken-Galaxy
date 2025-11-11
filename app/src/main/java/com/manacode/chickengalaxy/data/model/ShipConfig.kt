@@ -1,6 +1,6 @@
 package com.manacode.chickengalaxy
 
-import com.manacode.eggmagnet.data.model.ShipLevel
+import com.manacode.chickengalaxy.data.model.ShipLevel
 import kotlin.collections.first
 
 object ShipConfig {

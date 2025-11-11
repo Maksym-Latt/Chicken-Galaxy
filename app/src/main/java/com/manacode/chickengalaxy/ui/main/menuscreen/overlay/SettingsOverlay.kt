@@ -1,4 +1,4 @@
-package com.manacode.eggmagnet.ui.main.menuscreen.overlay
+package com.manacode.chickengalaxy.ui.main.menuscreen.overlay
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -19,7 +19,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.manacode.eggmagnet.ui.main.component.OrangePrimaryButton
+import com.manacode.chickengalaxy.ui.main.component.OrangePrimaryButton
 import kotlin.math.roundToInt
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -31,10 +31,10 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.manacode.eggmagnet.ui.main.component.GradientOutlinedText
-import com.manacode.eggmagnet.ui.main.component.GradientOutlinedTextShort
-import com.manacode.eggmagnet.ui.main.component.SecondaryBackButton
-import com.manacode.eggmagnet.ui.main.settings.SettingsViewModel
+import com.manacode.chickengalaxy.ui.main.component.GradientOutlinedText
+import com.manacode.chickengalaxy.ui.main.component.GradientOutlinedTextShort
+import com.manacode.chickengalaxy.ui.main.component.SecondaryBackButton
+import com.manacode.chickengalaxy.ui.main.settings.SettingsViewModel
 import kotlin.math.max
 
 @Composable

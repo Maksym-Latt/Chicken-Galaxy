@@ -1,4 +1,4 @@
-package com.manacode.eggmagnet.data.settings
+package com.manacode.chickengalaxy.data.settings
 
 interface SettingsRepository {
     fun getMusicVolume(): Int

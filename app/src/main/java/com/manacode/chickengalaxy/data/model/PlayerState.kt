@@ -1,4 +1,4 @@
-package com.manacode.eggmagnet.data.model
+package com.manacode.chickengalaxy.data.model
 
 data class PlayerState(
     val points: Int = 0,

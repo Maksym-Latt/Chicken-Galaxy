@@ -1,4 +1,4 @@
-package com.manacode.eggmagnet.data.model
+package com.manacode.chickengalaxy.data.model
 
 import androidx.annotation.DrawableRes
 

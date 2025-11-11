@@ -1,4 +1,4 @@
-package com.manacode.eggmagnet.ui.main.menuscreen.overlay
+package com.manacode.chickengalaxy.ui.main.menuscreen.overlay
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -45,9 +45,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.manacode.eggmagnet.ui.main.component.GradientOutlinedText
-import com.manacode.eggmagnet.ui.main.component.SecondaryBackButton
-import com.manacode.eggmagnet.ui.main.menuscreen.PlayerViewModel
+import com.manacode.chickengalaxy.ui.main.component.GradientOutlinedText
+import com.manacode.chickengalaxy.ui.main.component.SecondaryBackButton
+import com.manacode.chickengalaxy.ui.main.menuscreen.PlayerViewModel
 
 
 @Immutable

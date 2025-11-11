@@ -1,4 +1,4 @@
-package com.manacode.eggmagnet.ui.main.menuscreen
+package com.manacode.chickengalaxy.ui.main.menuscreen
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
@@ -14,12 +14,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
-import com.manacode.eggmagnet.ui.main.gamescreen.GameScreen
-import com.manacode.eggmagnet.ui.main.magnetshop.MagnetShopScreen
-import com.manacode.eggmagnet.ui.main.menuscreen.overlay.LeaderboardOverlay
-import com.manacode.eggmagnet.ui.main.menuscreen.overlay.LeaderboardRow
-import com.manacode.eggmagnet.ui.main.menuscreen.overlay.PrivacyOverlay
-import com.manacode.eggmagnet.ui.main.menuscreen.overlay.SettingsOverlay
+import com.manacode.chickengalaxy.ui.main.gamescreen.GameScreen
+import com.manacode.chickengalaxy.ui.main.magnetshop.MagnetShopScreen
+import com.manacode.chickengalaxy.ui.main.menuscreen.overlay.LeaderboardOverlay
+import com.manacode.chickengalaxy.ui.main.menuscreen.overlay.LeaderboardRow
+import com.manacode.chickengalaxy.ui.main.menuscreen.overlay.PrivacyOverlay
+import com.manacode.chickengalaxy.ui.main.menuscreen.overlay.SettingsOverlay
 
 @Composable
 fun AppRoot(

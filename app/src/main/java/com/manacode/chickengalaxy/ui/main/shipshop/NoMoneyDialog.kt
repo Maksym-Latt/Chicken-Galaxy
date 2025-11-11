@@ -1,4 +1,4 @@
-package com.manacode.eggmagnet.ui.main.magnetshop
+package com.manacode.chickengalaxy.ui.main.magnetshop
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -24,7 +24,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.manacode.eggmagnet.ui.main.component.OrangePrimaryButton
+import com.manacode.chickengalaxy.ui.main.component.OrangePrimaryButton
 
 @Composable
  fun NoMoneyDialog(onDismiss: () -> Unit) {

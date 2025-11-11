@@ -15,7 +15,8 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import com.manacode.chickengalaxy.ui.theme.ChickenGalaxyTheme
-import com.manacode.eggmagnet.audio.AudioController
+import com.manacode.chickengalaxy.audio.AudioController
+import com.manacode.chickengalaxy.ui.main.menuscreen.AppRoot
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 

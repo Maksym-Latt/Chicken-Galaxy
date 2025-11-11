@@ -1,7 +1,7 @@
-package com.manacode.eggmagnet.data.player
+package com.manacode.chickengalaxy.data.player
 
 import androidx.annotation.DrawableRes
-import com.manacode.eggmagnet.R
+import com.manacode.chickengalaxy.R
 import javax.inject.Inject
 import javax.inject.Singleton
 

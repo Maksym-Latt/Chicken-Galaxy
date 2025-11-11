@@ -1,4 +1,4 @@
-package com.manacode.eggmagnet.ui.main.menuscreen
+package com.manacode.chickengalaxy.ui.main.menuscreen
 
 import androidx.annotation.DrawableRes
 
