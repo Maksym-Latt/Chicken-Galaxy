@@ -9,17 +9,17 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.compose.runtime.getValue
 import com.manacode.chickengalaxy.ui.main.gamescreen.GameScreen
-import com.manacode.chickengalaxy.ui.main.magnetshop.MagnetShopScreen
 import com.manacode.chickengalaxy.ui.main.menuscreen.overlay.LeaderboardOverlay
 import com.manacode.chickengalaxy.ui.main.menuscreen.overlay.LeaderboardRow
 import com.manacode.chickengalaxy.ui.main.menuscreen.overlay.PrivacyOverlay
 import com.manacode.chickengalaxy.ui.main.menuscreen.overlay.SettingsOverlay
+import com.manacode.chickengalaxy.ui.main.upgrades.UpgradeScreen
 
 @Composable
 fun AppRoot(
@@ -33,7 +33,7 @@ fun AppRoot(
         }
     }
 
-    Box(Modifier.fillMaxSize().background(Color.Black)) {
+    Box(Modifier.fillMaxSize().background(Color(0xFF040414))) {
         AnimatedContent(
             targetState = ui.screen,
             label = "screen",
@@ -42,13 +42,13 @@ fun AppRoot(
             when (screen) {
                 MainViewModel.Screen.Menu -> MenuScreen(
                     onStartGame = vm::startGame,
-                    onOpenTop = vm::openLeaderboard,
                     onOpenSettings = vm::openSettings,
-                    onOpenMagnetShop = vm::openMagnetShop,
+                    onOpenLeaderboard = vm::openLeaderboard,
+                    onOpenSkins = vm::openSkins,
                 )
                 MainViewModel.Screen.Game -> GameScreen(
                     onExitToMenu = vm::backFromGameToMenu,
-                    onExitToMenuWithMagnetShop = vm::backFromGameToMenuWithMagnetShop
+                    onOpenSkins = vm::backFromGameToMenuWithSkins
                 )
             }
         }
@@ -57,7 +57,7 @@ fun AppRoot(
             when (ui.menuOverlay) {
                 MainViewModel.MenuOverlay.Leaderboard ->
                     LeaderboardOverlay(
-                        onClose = { vm.closeOverlay() },
+                        onClose = vm::closeOverlay,
                         items = listOf(
                             LeaderboardRow("Sky Raily", 13200),
                             LeaderboardRow("John Douk", 11200),
@@ -75,8 +75,8 @@ fun AppRoot(
                         onPrivacy = vm::openPrivacy
                     )
 
-                MainViewModel.MenuOverlay.MagnetShop ->
-                    MagnetShopScreen(onBack = vm::closeOverlay)
+                MainViewModel.MenuOverlay.Skins ->
+                    UpgradeScreen(onBack = vm::closeOverlay)
 
                 MainViewModel.MenuOverlay.Privacy ->
                     PrivacyOverlay(onClose = vm::closeOverlay)

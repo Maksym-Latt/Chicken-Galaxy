@@ -8,25 +8,24 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
+
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val audio: AudioController
 ) : ViewModel() {
 
     enum class Screen { Menu, Game }
-    enum class MenuOverlay { None, Leaderboard, Settings, MagnetShop, Privacy }
+    enum class MenuOverlay { None, Leaderboard, Settings, Skins, Privacy }
 
     data class UiState(
         val screen: Screen = Screen.Menu,
         val menuOverlay: MenuOverlay = MenuOverlay.None,
-        val playerPoints: Int = 11_932,
-        val magnetLevel: Int = 1             // 1..N
+        val playerPoints: Int = 11_932
     )
 
     private val _ui = MutableStateFlow(UiState())
     val ui: StateFlow<UiState> = _ui.asStateFlow()
 
-    /* ---------- Navigation ---------- */
     init {
         audio.playMenuMusic()
     }
@@ -36,25 +35,21 @@ class MainViewModel @Inject constructor(
         copy(screen = Screen.Game, menuOverlay = MenuOverlay.None)
     }
 
-
     fun backFromGameToMenu() = update {
         audio.playMenuMusic()
         copy(screen = Screen.Menu)
     }
 
-    fun backFromGameToMenuWithMagnetShop() = update {
+    fun backFromGameToMenuWithSkins() = update {
         audio.playMenuMusic()
-        copy(screen = Screen.Menu, menuOverlay = MenuOverlay.MagnetShop)
+        copy(screen = Screen.Menu, menuOverlay = MenuOverlay.Skins)
     }
 
-    /* ---------- Menu overlays ---------- */
-    fun openPrivacy() {
-        updateIfMenu { copy(menuOverlay = MenuOverlay.Privacy) }
-    }
+    fun openPrivacy() { updateIfMenu { copy(menuOverlay = MenuOverlay.Privacy) } }
     fun openLeaderboard() = updateIfMenu { copy(menuOverlay = MenuOverlay.Leaderboard) }
-    fun openSettings()    = updateIfMenu { copy(menuOverlay = MenuOverlay.Settings) }
-    fun openMagnetShop()  = updateIfMenu { copy(menuOverlay = MenuOverlay.MagnetShop) }
-    fun closeOverlay()    = update { copy(menuOverlay = MenuOverlay.None) }
+    fun openSettings() = updateIfMenu { copy(menuOverlay = MenuOverlay.Settings) }
+    fun openSkins() = updateIfMenu { copy(menuOverlay = MenuOverlay.Skins) }
+    fun closeOverlay() = update { copy(menuOverlay = MenuOverlay.None) }
 
     fun onBackPressed(): Boolean {
         val s = _ui.value
@@ -65,10 +60,10 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    /* ---------- helpers ---------- */
     private inline fun update(block: UiState.() -> UiState) {
         _ui.update(block)
     }
+
     private inline fun updateIfMenu(block: UiState.() -> UiState) {
         _ui.update { if (it.screen == Screen.Menu) block(it) else it }
     }

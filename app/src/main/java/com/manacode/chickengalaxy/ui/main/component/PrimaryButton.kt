@@ -1,4 +1,4 @@
-package com.manacode.feedthechick.ui.main.component
+package com.manacode.chickengalaxy.ui.main.component
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.manacode.feedthechick.R
+import com.manacode.chickengalaxy.R
 
 // ---------- Public API ----------
 @Composable

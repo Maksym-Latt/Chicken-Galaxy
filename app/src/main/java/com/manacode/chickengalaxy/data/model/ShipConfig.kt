@@ -1,15 +1,12 @@
-package com.manacode.chickengalaxy
-
-import com.manacode.chickengalaxy.data.model.ShipLevel
-import kotlin.collections.first
+package com.manacode.chickengalaxy.data.model
 
 object ShipConfig {
     val levels: List<ShipLevel> = listOf(
-        ShipLevel(1, R.drawable.ship_lvl1, 2000,  damage = 1),
-        ShipLevel(2, R.drawable.ship_lvl1, 3000,  damage = 2),
-        ShipLevel(3, R.drawable.ship_lvl1, 7000,  damage = 3),
-        ShipLevel(4, R.drawable.ship_lvl1, 11000, damage = 4),
-        ShipLevel(5, R.drawable.ship_lvl1, -1,    damage = 5),
+        ShipLevel(level = 1, pricePoints = 0, damage = 1),
+        ShipLevel(level = 2, pricePoints = 2000, damage = 2),
+        ShipLevel(level = 3, pricePoints = 4500, damage = 3),
+        ShipLevel(level = 4, pricePoints = 7500, damage = 4),
+        ShipLevel(level = 5, pricePoints = 12000, damage = 5)
     )
 
     val maxLevel = levels.maxOf { it.level }

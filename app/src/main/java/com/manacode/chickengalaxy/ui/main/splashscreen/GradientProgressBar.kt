@@ -1,4 +1,4 @@
-package com.manacode.eggmagnet.ui.main.splashscreen
+package com.manacode.chickengalaxy.ui.main.splashscreen
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.fillMaxWidth

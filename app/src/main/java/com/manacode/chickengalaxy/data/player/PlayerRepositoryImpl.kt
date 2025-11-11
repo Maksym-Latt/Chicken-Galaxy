@@ -25,18 +25,20 @@ class PlayerRepositoryImpl @Inject constructor(
     override val playerFlow: Flow<PlayerState> = _state.asStateFlow()
 
     private fun readState(): PlayerState = PlayerState(
-        points = prefs.getInt("points", 0),        // демо-значення
-        ship = prefs.getInt("shipLevel", 1),
-        gameLevel = prefs.getInt("gameLevel", 1),
-        exp = prefs.getInt("exp", 0)
+        points = prefs.getInt("points", 0),
+        eggBlasterLevel = prefs.getInt("eggBlasterLevel", 1),
+        featherShieldLevel = prefs.getInt("featherShieldLevel", 1),
+        playerLevel = prefs.getInt("playerLevel", 1),
+        experience = prefs.getInt("playerExperience", 0)
     )
 
     private fun writeState(s: PlayerState) {
         prefs.edit()
             .putInt("points", s.points)
-            .putInt("shipLevel", s.ship)
-            .putInt("gameLevel", s.gameLevel)
-            .putInt("exp", s.exp)
+            .putInt("eggBlasterLevel", s.eggBlasterLevel)
+            .putInt("featherShieldLevel", s.featherShieldLevel)
+            .putInt("playerLevel", s.playerLevel)
+            .putInt("playerExperience", s.experience)
             .apply()
     }
 
@@ -62,15 +64,18 @@ class PlayerRepositoryImpl @Inject constructor(
         ok
     }
 
-    override suspend fun setShipLevel(level: Int) = withContext(Dispatchers.IO) {
-        update { it.copy(ship = level.coerceAtLeast(1)) }
+    override suspend fun setEggBlasterLevel(level: Int) = withContext(Dispatchers.IO) {
+        update { it.copy(eggBlasterLevel = level.coerceAtLeast(1)) }
     }
 
-    override suspend fun setGameLevel(level: Int) = withContext(Dispatchers.IO) {
-        update { it.copy(gameLevel = level.coerceAtLeast(1), exp = 0) }
+    override suspend fun setFeatherShieldLevel(level: Int) = withContext(Dispatchers.IO) {
+        update { it.copy(featherShieldLevel = level.coerceAtLeast(1)) }
     }
 
-    // EXP: 1lvl=100, 2lvl=120, 3lvl=140, ... => 100 + (level-1)*20
+    override suspend fun setPlayerLevel(level: Int) = withContext(Dispatchers.IO) {
+        update { it.copy(playerLevel = level.coerceAtLeast(1), experience = 0) }
+    }
+
     override fun requiredForLevel(level: Int): Int =
         100 + (level - 1) * 20
 
@@ -79,8 +84,8 @@ class PlayerRepositoryImpl @Inject constructor(
             val s = _state.value
 
             var leveledUp = false
-            var exp = (s.exp + max(0, expDelta))
-            var lvl = s.gameLevel
+            var exp = (s.experience + max(0, expDelta))
+            var lvl = s.playerLevel
 
             while (exp >= requiredForLevel(lvl)) {
                 exp -= requiredForLevel(lvl)
@@ -88,7 +93,7 @@ class PlayerRepositoryImpl @Inject constructor(
                 leveledUp = true
             }
 
-            update { it.copy(gameLevel = lvl, exp = exp) }
+            update { it.copy(playerLevel = lvl, experience = exp) }
 
             LevelUpResult(
                 leveledUp = leveledUp,
@@ -98,7 +103,7 @@ class PlayerRepositoryImpl @Inject constructor(
         }
 
     override suspend fun reset() = withContext(Dispatchers.IO) {
-        val base = PlayerState(points = 0, ship = 1, gameLevel = 1, exp = 0)
+        val base = PlayerState()
         _state.value = base
         writeState(base)
     }
