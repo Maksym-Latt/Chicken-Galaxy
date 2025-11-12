@@ -257,7 +257,7 @@ private fun generateUpgradeStars(count: Int = 70, seed: Int = 73): List<UpgradeS
 
 @Composable
 private fun StarBackdrop(stars: List<UpgradeStar>) {
-    Canvas(Modifier.matchParentSize()) {
+    Canvas(Modifier) {
         stars.forEach { star ->
             drawCircle(
                 color = Color.White.copy(alpha = star.alpha),

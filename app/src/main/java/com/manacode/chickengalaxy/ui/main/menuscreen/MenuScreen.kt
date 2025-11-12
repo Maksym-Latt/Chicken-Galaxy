@@ -358,7 +358,7 @@ private fun StarLayer(stars: List<StarPoint>) {
         ),
         label = "pulse"
     )
-    Canvas(Modifier.matchParentSize()) {
+    Canvas(Modifier) {
         stars.forEach { star ->
             val x = star.x * size.width
             val y = star.y * size.height

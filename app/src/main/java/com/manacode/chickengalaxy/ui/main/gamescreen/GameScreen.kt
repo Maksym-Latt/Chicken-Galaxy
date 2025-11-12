@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -33,10 +34,10 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.input.pointer.consume
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -244,7 +245,7 @@ private fun toOffset(
     return androidx.compose.ui.unit.IntOffset((px - half).roundToInt(), (py - half).roundToInt())
 }
 
-private fun toDp(value: Float, basePx: Float, density: LocalDensity): Dp = with(density) { (value * basePx).toDp() }
+private fun toDp(value: Float, basePx: Float, density: Density): Dp = with(density) { (value * basePx).toDp() }
 
 @Composable
 private fun StarLayer(stars: List<Star>) {
@@ -456,7 +457,6 @@ private fun EnergyBar(progress: Float) {
 private fun StatChip(title: String, value: String) {
     Column(
         modifier = Modifier
-            .weight(1f)
             .clip(RoundedChipShape)
             .background(Color(0x33050B27))
             .padding(vertical = 8.dp)
