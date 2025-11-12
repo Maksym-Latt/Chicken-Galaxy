@@ -53,6 +53,8 @@ import com.manacode.chickengalaxy.ui.main.component.SecondaryIconButton
 @Composable
 fun WinOverlay(
     result: GameResult,
+    totalPoints: Int,
+    gainedPoints: Int,
     onPlayAgain: () -> Unit,
     onMenu: () -> Unit,
     onOpenSkins: () -> Unit
@@ -82,9 +84,15 @@ fun WinOverlay(
                 verticalArrangement = Arrangement.spacedBy(6.dp)
             ) {
                 ScoreBadge(
-                    points = result.score,
+                    points = totalPoints,
                     widthScale = 1.4f,
                     modifier = Modifier.onGloballyPositioned { badgeWidthPx = it.size.width }
+                )
+                PointsGainRow(
+                    amount = gainedPoints,
+                    modifier = Modifier
+                        .width(badgeWidthDp)
+                        .padding(end = 4.dp)
                 )
                 EggsGainRow(
                     amount = result.bonusEggs,
@@ -157,6 +165,33 @@ private fun EggsGainRow(
             painter = painterResource(id = R.drawable.egg),
             contentDescription = null,
             modifier = Modifier.size(18.dp)
+        )
+    }
+}
+
+// ----------------------- +Points compact row -----------------------
+@Composable
+private fun PointsGainRow(
+    amount: Int,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.End
+    ) {
+        Text(
+            text = "POINTS",
+            color = Color(0xFFB3C6FF),
+            fontSize = 14.sp,
+            modifier = Modifier.padding(end = 8.dp)
+        )
+        GradientOutlinedTextShort(
+            text = "+${formatScoreFixed(amount)} pts",
+            fontSize = 18.sp,
+            strokeWidth = 3f,
+            gradientColors = listOf(Color.White, Color(0xFFE3F2FD)),
+            modifier = Modifier.wrapContentWidth()
         )
     }
 }
