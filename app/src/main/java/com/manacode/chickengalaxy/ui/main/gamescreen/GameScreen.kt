@@ -12,10 +12,10 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.matchParentSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -49,6 +49,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.manacode.chickengalaxy.R
 import com.manacode.chickengalaxy.audio.rememberAudioController
 import com.manacode.chickengalaxy.ui.main.component.GradientOutlinedText
+import com.manacode.chickengalaxy.ui.main.component.ScoreBadge
 import com.manacode.chickengalaxy.ui.main.component.SecondaryIconButton
 import com.manacode.chickengalaxy.ui.main.gamescreen.overlay.GameSettingsOverlay
 import com.manacode.chickengalaxy.ui.main.gamescreen.overlay.IntroOverlay
@@ -352,31 +353,22 @@ private fun Scoreboard(
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
+        // ----------------------- Верхній ряд: Пауза + Очки -----------------------
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Column {
-                Text(
-                    text = "Score",
-                    color = Color.White.copy(alpha = 0.7f),
-                    fontSize = 14.sp
-                )
-                GradientOutlinedText(
-                    text = state.score.toString(),
-                    fontSize = 34.sp,
-                    gradientColors = listOf(Color.White, Color(0xFFFFF9C4))
-                )
-            }
             SecondaryIconButton(onClick = onPause) {
                 Icon(
                     imageVector = Icons.Filled.Pause,
                     contentDescription = "Pause",
                     tint = Color.White,
-                    modifier = Modifier.fillMaxSize(0.8f)
+                    modifier = Modifier.fillMaxSize(0.85f)
                 )
             }
+
+            ScoreBadge(points = state.score)
         }
 
         LivesRow(lives = state.lives, total = 3)

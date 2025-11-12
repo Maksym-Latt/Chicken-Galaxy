@@ -1,31 +1,55 @@
 package com.manacode.chickengalaxy.ui.main.gamescreen.overlay
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Pause
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.manacode.chickengalaxy.ui.main.component.GradientOutlinedText
+import com.manacode.chickengalaxy.ui.main.component.GradientOutlinedTextShort
 import com.manacode.chickengalaxy.ui.main.component.OrangePrimaryButton
+import com.manacode.chickengalaxy.ui.main.component.ScoreBadge
 import com.manacode.chickengalaxy.ui.main.component.StartPrimaryButton
+import com.manacode.chickengalaxy.ui.main.component.formatScoreFixed
 import com.manacode.chickengalaxy.ui.main.gamescreen.GameResult
+import com.manacode.chickengalaxy.R
+import com.manacode.chickengalaxy.ui.main.component.SecondaryIconButton
 
+// ----------------------- Win Overlay -----------------------
 @Composable
 fun WinOverlay(
     result: GameResult,
@@ -36,55 +60,104 @@ fun WinOverlay(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xCC02020A)),
-        contentAlignment = Alignment.Center
+            .background(Color(0xCC02020A))
     ) {
-        val shape = RoundedCornerShape(28.dp)
-        Box(
+
+        // ----------------------- Top HUD: full-width -----------------------
+        Row(
             modifier = Modifier
-                .fillMaxWidth(0.85f)
-                .clip(shape)
-                .background(
-                    Brush.verticalGradient(
-                        listOf(Color(0xFF251444), Color(0xFF0D0824))
-                    )
-                )
-                .padding(horizontal = 24.dp, vertical = 28.dp)
+                .align(Alignment.TopStart)
+                .fillMaxWidth()
+                .padding(horizontal = 25.dp, vertical = 24.dp),
+            verticalAlignment = Alignment.Top
         ) {
+            Spacer(Modifier.weight(1f)) // ← штовхає контент у правий край
+
+            val density = LocalDensity.current
+            var badgeWidthPx by remember { mutableStateOf(0) }
+            val badgeWidthDp = with(density) { badgeWidthPx.toDp() }
+
             Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                horizontalAlignment = Alignment.End,
+                verticalArrangement = Arrangement.spacedBy(6.dp)
             ) {
-                GradientOutlinedText(
-                    text = "Good Job!",
-                    fontSize = 36.sp,
-                    gradientColors = listOf(Color.White, Color(0xFFFFE082))
+                ScoreBadge(
+                    points = result.score,
+                    widthScale = 1.4f,
+                    modifier = Modifier.onGloballyPositioned { badgeWidthPx = it.size.width }
                 )
-
-                ResultRow(label = "Score", value = result.score.toString())
-                ResultRow(label = "Survival", value = formatTime(result.timeSeconds))
-                ResultRow(label = "Eggs", value = result.bonusEggs.toString())
-                ResultRow(label = "Enemies down", value = result.enemiesDown.toString())
-
-                Spacer(Modifier.height(8.dp))
-
-                StartPrimaryButton(
-                    text = "Play Again",
-                    onClick = onPlayAgain,
-                    modifier = Modifier.fillMaxWidth(0.8f)
-                )
-                OrangePrimaryButton(
-                    text = "Return to Menu",
-                    onClick = onMenu,
-                    modifier = Modifier.fillMaxWidth(0.8f)
-                )
-                OrangePrimaryButton(
-                    text = "Visit Skins",
-                    onClick = onOpenSkins,
-                    modifier = Modifier.fillMaxWidth(0.8f)
+                EggsGainRow(
+                    amount = result.bonusEggs,
+                    modifier = Modifier
+                        .width(badgeWidthDp)
+                        .padding(end = 4.dp)
                 )
             }
         }
+
+
+        // ----------------------- Center content -----------------------
+        Column(
+            modifier = Modifier
+                .align(Alignment.Center)
+                .padding(horizontal = 24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            GradientOutlinedText(
+                text = "GOOD JOB!",
+                fontSize = 40.sp,
+                gradientColors = listOf(Color.White, Color(0xFFFFE082))
+            )
+
+            Image(
+                painter = painterResource(id = R.drawable.player_win),
+                contentDescription = null,
+                modifier = Modifier
+                    .fillMaxWidth(0.9f)
+                    .aspectRatio(1f),
+                contentScale = ContentScale.Fit
+            )
+
+            OrangePrimaryButton(
+                text = "Restart",
+                onClick = onPlayAgain,
+                modifier = Modifier.fillMaxWidth(0.6f)
+            )
+
+            StartPrimaryButton(
+                text = "MENU",
+                onClick = onMenu,
+                modifier = Modifier.fillMaxWidth(0.7f)
+            )
+        }
+    }
+}
+
+// ----------------------- +Eggs compact row -----------------------
+@Composable
+private fun EggsGainRow(
+    amount: Int,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.End
+    ) {
+        GradientOutlinedTextShort(
+            text = "+${formatScoreFixed(amount)}",
+            fontSize = 18.sp,
+            strokeWidth = 3f,
+            gradientColors = listOf(Color.White, Color(0xFFFFF59D)),
+            modifier = Modifier.wrapContentWidth()
+        )
+        Spacer(Modifier.width(6.dp))
+        Image(
+            painter = painterResource(id = R.drawable.egg),
+            contentDescription = null,
+            modifier = Modifier.size(18.dp)
+        )
     }
 }
 

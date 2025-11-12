@@ -12,10 +12,11 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.matchParentSize
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,20 +27,29 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.manacode.chickengalaxy.R
 import com.manacode.chickengalaxy.ui.main.component.GradientOutlinedText
+import com.manacode.chickengalaxy.ui.main.component.GradientOutlinedTextShort
 import com.manacode.chickengalaxy.ui.main.component.OrangePrimaryButton
+import com.manacode.chickengalaxy.ui.main.component.ScoreBadge
 import com.manacode.chickengalaxy.ui.main.component.SecondaryBackButton
 import com.manacode.chickengalaxy.ui.main.component.StartPrimaryButton
+import com.manacode.chickengalaxy.ui.main.component.formatScoreFixed
 import com.manacode.chickengalaxy.ui.main.menuscreen.PlayerViewModel
 import kotlin.math.roundToInt
 import kotlin.random.Random
@@ -87,47 +97,37 @@ fun UpgradeScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             TopBar(onBack = onBack, points = state.points)
-            Spacer(Modifier.height(16.dp))
+            Spacer(Modifier.height(36.dp))
+            // ----------------------- Заголовок + корабель -----------------------
             GradientOutlinedText(
                 text = "Hangar Upgrades",
-                fontSize = 32.sp,
+                fontSize = 36.sp,
                 gradientColors = listOf(Color.White, Color(0xFFB3E5FC))
             )
-            Spacer(Modifier.height(18.dp))
+            Spacer(Modifier.height(24.dp))
 
             HangarShipArt()
-            Spacer(Modifier.height(18.dp))
 
-            UpgradeCard(
+            Spacer(Modifier.height(24.dp))
+
+        // ----------------------- Egg Blaster -----------------------
+            EggUpgradeCard(
                 title = "Egg Blaster",
                 level = state.eggBlasterLevel,
                 bonus = state.eggBlasterBonus,
                 description = state.eggBlasterDescription,
                 cost = state.eggBlasterNextCost,
-                accent = Color(0xFFFFD54F),
+                currentPoints = state.points,
                 onUpgrade = {
-                    if (state.eggBlasterNextCost == null) return@UpgradeCard
+                    if (state.eggBlasterNextCost == null) return@EggUpgradeCard
                     playerVm.upgradeEggBlaster(
                         onFail = { showNoMoney = true }
                     )
                 }
             )
-            Spacer(Modifier.height(16.dp))
-            UpgradeCard(
-                title = "Feather Shield",
-                level = state.featherShieldLevel,
-                bonus = state.featherShieldBonus,
-                description = state.featherShieldDescription,
-                cost = state.featherShieldNextCost,
-                accent = Color(0xFF80CBC4),
-                onUpgrade = {
-                    if (state.featherShieldNextCost == null) return@UpgradeCard
-                    playerVm.upgradeFeatherShield(
-                        onFail = { showNoMoney = true }
-                    )
-                }
-            )
-            Spacer(Modifier.height(24.dp))
+
+            Spacer(Modifier.height(54.dp))
+
             Text(
                 text = "Collect eggs in missions to earn more upgrade points.",
                 color = Color(0xFFB3C6FF),
@@ -153,7 +153,7 @@ private fun HangarShipArt() {
         contentAlignment = Alignment.Center
     ) {
         Canvas(Modifier.matchParentSize()) {
-            val center = androidx.compose.ui.geometry.Offset(size.width / 2f, size.height / 2f)
+            val center = Offset(size.width / 2f, size.height / 2f)
             drawCircle(
                 brush = Brush.radialGradient(
                     listOf(Color(0x6688C6FF), Color.Transparent)
@@ -165,7 +165,7 @@ private fun HangarShipArt() {
         Image(
             painter = painterResource(id = R.drawable.ship),
             contentDescription = null,
-            modifier = Modifier.fillMaxSize(0.8f),
+            modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Fit
         )
     }
@@ -179,110 +179,189 @@ private fun TopBar(onBack: () -> Unit, points: Int) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         SecondaryBackButton(onClick = onBack)
-        PointsDisplay(points)
+
+        ScoreBadge(points = points)
     }
 }
 
+// ----------------------- Картка апгрейду (оновлена) -----------------------
 @Composable
-private fun PointsDisplay(points: Int) {
-    val formatted = remember(points) { points.thousands() }
-    val shape = RoundedCornerShape(50)
-    Box(
-        modifier = Modifier
-            .clip(shape)
-            .background(
-                Brush.horizontalGradient(
-                    listOf(Color(0xFFFFF59D), Color(0xFFFFB300))
-                )
-            )
-            .padding(horizontal = 20.dp, vertical = 10.dp)
-    ) {
-        Text(
-            text = "$formatted pts",
-            color = Color(0xFF3E2723),
-            fontWeight = FontWeight.ExtraBold
-        )
-    }
-}
-
-@Composable
-private fun UpgradeCard(
+private fun EggUpgradeCard(
     title: String,
     level: Int,
     bonus: String,
     description: String,
     cost: Int?,
-    accent: Color,
+    currentPoints: Int,
     onUpgrade: () -> Unit
 ) {
-    val shape = RoundedCornerShape(24.dp)
+    val shape = RoundedCornerShape(22.dp)
+
+    // ----------------------- Фони/бордери -----------------------
+    val glass = Brush.verticalGradient(
+        0f to Color(0x332B3C8F),
+        1f to Color(0x1A0E1438)
+    )
+    val innerGlow = Brush.verticalGradient(
+        0f to Color(0x1AFFFFFF),
+        1f to Color(0x00000000)
+    )
+    val borderGradient = Brush.linearGradient(
+        colors = listOf(Color(0x99B3E5FC), Color(0x66B388FF)),
+        start = Offset.Zero,
+        end = Offset.Infinite
+    )
+
+    // ----------------------- Контейнер -----------------------
     Box(
         modifier = Modifier
             .fillMaxWidth()
+            .shadow(20.dp, shape, clip = false, spotColor = Color(0x55000000))
             .clip(shape)
-            .background(Color(0x33212B6B))
-            .border(2.dp, Color(0x5588A4FF), shape)
-            .padding(horizontal = 18.dp, vertical = 20.dp)
+            .background(glass)
+            .border(1.5.dp, borderGradient, shape)
+            .drawBehind {
+                drawRoundRect(
+                    brush = innerGlow,
+                    cornerRadius = CornerRadius(22.dp.toPx(), 22.dp.toPx())
+                )
+            }
+            .padding(horizontal = 14.dp, vertical = 14.dp)
     ) {
-        Column(
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
+
+        Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+
+            // ----------------------- Заголовок + рівень -----------------------
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Column {
-                    Text(
-                        text = "$title",
-                        color = Color.White,
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.SemiBold
+                Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                    GradientOutlinedTextShort(
+                        text = title,
+                        fontSize = 22.sp,
+                        strokeWidth = 4f,
+                        gradientColors = listOf(Color(0xFFFFF59D), Color(0xFFFFB300)),
+                        modifier = Modifier.fillMaxWidth(0.82f)
                     )
-                    Text(
-                        text = "Level $level",
-                        color = Color(0xFFB3C6FF)
-                    )
+
+                    Spacer(Modifier.height(10.dp))
+
+                    LevelChip(level = level)
                 }
-                UpgradeBadge(accent)
             }
-            Text(
-                text = bonus,
-                color = accent,
-                fontWeight = FontWeight.Bold,
-                fontSize = 16.sp
-            )
+
+            // ----------------------- Бонус -----------------------
+            BonusChip(text = bonus)
+
+            // ----------------------- Опис -----------------------
             Text(
                 text = description,
-                color = Color(0xFFCFD8DC),
-                fontSize = 13.sp
+                color = Color(0xFFD7E0FF),
+                fontSize = 12.sp,
+                lineHeight = 16.sp
             )
-            Spacer(Modifier.height(4.dp))
+
+            // ----------------------- Ціна / залишок / кнопка -----------------------
             if (cost != null) {
-                OrangePrimaryButton(
-                    text = "Upgrade — ${cost.thousands()} pts",
-                    onClick = onUpgrade,
-                    modifier = Modifier.fillMaxWidth(0.7f)
-                )
+                val canAfford = currentPoints >= cost
+                val remaining = (currentPoints - cost).coerceAtLeast(0)
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    PriceRowEggs(label = "Cost", amount = cost)
+                    if (canAfford) {
+                        PriceRowEggs(label = "After purchase", amount = remaining, labelColor = Color(0xFFB3C6FF))
+                    } else {
+                        PriceRowEggs(label = "Missing", amount = (cost - currentPoints), labelColor = Color(0xFFFF8A80))
+                    }
+                    OrangePrimaryButton(
+                        text = if (canAfford) "Upgrade" else "Not enough eggs",
+                        onClick = if (canAfford) onUpgrade else ({ }),
+                        modifier = Modifier
+                            .align(Alignment.End)
+                            .fillMaxWidth(0.8f)
+                    )
+                }
             } else {
                 StartPrimaryButton(
                     text = "Max level",
                     onClick = {},
-                    modifier = Modifier.fillMaxWidth(0.6f)
+                    modifier = Modifier
+                        .align(Alignment.End)
+                        .fillMaxWidth(0.7f)
                 )
             }
         }
     }
 }
 
+// ----------------------- Чип рівня -----------------------
 @Composable
-private fun UpgradeBadge(accent: Color) {
-    Canvas(Modifier.size(72.dp)) {
-        val center = androidx.compose.ui.geometry.Offset(size.width / 2f, size.height / 2f)
-        val radius = size.minDimension / 2.6f
-        drawCircle(color = accent.copy(alpha = 0.4f), radius = radius * 1.5f, center = center)
-        drawCircle(color = accent, radius = radius, center = center)
-        drawCircle(color = Color.White, radius = radius * 0.5f, center = center, style = Stroke(width = radius * 0.15f))
+private fun LevelChip(level: Int) {
+    val s = RoundedCornerShape(50)
+    Box(
+        modifier = Modifier
+            .clip(s)
+            .background(Brush.horizontalGradient(listOf(Color(0x3346C2FF), Color(0x3315E1FF))))
+            .border(1.dp, Color(0x55B3E5FC), s)
+            .padding(horizontal = 10.dp, vertical = 4.dp)
+    ) {
+        Text(
+            text = "Level $level",
+            color = Color(0xFFB3E5FC),
+            fontSize = 12.sp
+        )
+    }
+}
+
+// ----------------------- Чип бонусу -----------------------
+@Composable
+private fun BonusChip(text: String) {
+    val s = RoundedCornerShape(12.dp)
+    Box(
+        modifier = Modifier
+            .clip(s)
+            .background(Brush.horizontalGradient(listOf(Color(0x1AFFD54F), Color(0x1AFFB300))))
+            .border(1.dp, Color(0x66FFD54F), s)
+            .padding(horizontal = 10.dp, vertical = 6.dp)
+    ) {
+        GradientOutlinedTextShort(
+            text = text,
+            fontSize = 16.sp,
+            strokeWidth = 3f,
+            gradientColors = listOf(Color(0xFFFFF59D), Color(0xFFFFB300))
+        )
+    }
+}
+
+// ----------------------- Рядок ціни з яйцем -----------------------
+@Composable
+private fun PriceRowEggs(
+    label: String,
+    amount: Int,
+    labelColor: Color = Color(0xFFB3C6FF)
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Text(text = label, color = labelColor, fontSize = 13.sp)
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Image(
+                painter = painterResource(id = R.drawable.egg),
+                contentDescription = null,
+                modifier = Modifier
+                    .size(18.dp)
+                    .offset(y = 1.dp)
+            )
+            Spacer(Modifier.width(6.dp))
+            Text(
+                text = formatScoreFixed(amount), // 1.234.567
+                color = Color.White,
+                fontSize = 15.sp,
+                fontWeight = FontWeight.SemiBold
+            )
+        }
     }
 }
 

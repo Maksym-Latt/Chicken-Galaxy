@@ -16,7 +16,7 @@ class DefaultAudioController @Inject constructor(
 ) : AudioController {
 
     private enum class MusicChannel { MENU, GAME }
-    private enum class SoundEffect { SHIP_PURCHASE, NOT_ENOUGH_MONEY, MISS, HIT, EXPLOSION, WIN, LOSE }
+    private enum class SoundEffect { NOT_ENOUGH_MONEY, GETHIT, SHOT, COLLECT,EXPLOSION, WIN }
 
     private val soundPool: SoundPool = SoundPool.Builder()
         .setMaxStreams(6)
@@ -30,8 +30,11 @@ class DefaultAudioController @Inject constructor(
 
     private val effectToName = mapOf(
         SoundEffect.NOT_ENOUGH_MONEY to "sfx_no_money",
+        SoundEffect.GETHIT to "sfx_get_damage",
+        SoundEffect.SHOT to "sfx_sfx_shot",
+        SoundEffect.EXPLOSION to "sfx_blast",
+        SoundEffect.COLLECT to "sfx_item_collect",
         SoundEffect.WIN to "sfx_game_win",
-        SoundEffect.LOSE to "sfx_game_lose"
     )
 
     private val effectToResId = effectToName.mapValues { resolveRaw(it.value) }
@@ -123,33 +126,6 @@ class DefaultAudioController @Inject constructor(
         soundVolume = percent.toVolume()
     }
 
-    override fun playMagnetPurchase() {
-        playEffect(SoundEffect.SHIP_PURCHASE)
-    }
-
-    override fun playNotEnoughMoney() {
-        playEffect(SoundEffect.NOT_ENOUGH_MONEY)
-    }
-
-    override fun playEggPickup() {
-        playEffect(SoundEffect.HIT)
-    }
-
-    override fun playRockPickup() {
-        playEffect(SoundEffect.MISS)
-    }
-
-    override fun playBombHit() {
-        playEffect(SoundEffect.EXPLOSION)
-    }
-
-    override fun playGameWin() {
-        playEffect(SoundEffect.WIN)
-    }
-
-    override fun playGameLose() {
-        playEffect(SoundEffect.LOSE)
-    }
 
     private fun playMusic(channel: MusicChannel) {
         if (currentMusic == channel && musicPlayers[channel]?.isPlaying == true) {

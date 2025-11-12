@@ -15,6 +15,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Place
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Replay
 import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material3.Icon
@@ -32,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.manacode.chickengalaxy.ui.main.component.GradientOutlinedText
 import com.manacode.chickengalaxy.ui.main.component.LabeledSlider
 import com.manacode.chickengalaxy.ui.main.component.OrangePrimaryButton
 import com.manacode.chickengalaxy.ui.main.component.SecondaryIconButton
@@ -75,13 +78,11 @@ fun GameSettingsOverlay(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(18.dp)
             ) {
-                Text(
+                GradientOutlinedText(
                     text = "Paused",
-                    color = Color.White,
-                    fontSize = 32.sp,
-                    fontWeight = FontWeight.Bold
+                    fontSize = 38.sp,
+                    gradientColors = listOf(Color.White, Color.White)
                 )
-
                 LabeledSlider(
                     title = "Music",
                     value = ui.musicVolume,
@@ -96,11 +97,11 @@ fun GameSettingsOverlay(
                 )
 
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().padding(top = 30.dp),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
                     SecondaryIconButton(onClick = onResume) {
-                        Icon(Icons.Default.ThumbUp, contentDescription = "Resume", tint = Color.White)
+                        Icon(Icons.Default.PlayArrow, contentDescription = "Resume", tint = Color.White)
                     }
                     SecondaryIconButton(onClick = onRestart) {
                         Icon(Icons.Default.Replay, contentDescription = "Restart", tint = Color.White)
@@ -109,12 +110,6 @@ fun GameSettingsOverlay(
                         Icon(Icons.Default.Home, contentDescription = "Menu", tint = Color.White)
                     }
                 }
-
-                OrangePrimaryButton(
-                    text = "Resume",
-                    onClick = onResume,
-                    modifier = Modifier.fillMaxWidth(0.7f)
-                )
             }
         }
     }
