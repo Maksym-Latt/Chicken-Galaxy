@@ -75,8 +75,12 @@ fun GameScreen(
     LaunchedEffect(audio) {
         viewModel.events.collect { event ->
             when (event) {
+                GameEvent.PlayerShot -> audio.playShot()
+                GameEvent.PlayerHit -> audio.playGetHit()
+                GameEvent.EnemyDestroyed -> audio.playExplosion()
+                GameEvent.EggCollected -> audio.playCollect()
                 is GameEvent.GameOver -> {
-                    audio.playGameLose()
+                    audio.playWin()
                     playerVm.addGameResult(event.result.score, event.result.bonusEggs)
                 }
             }

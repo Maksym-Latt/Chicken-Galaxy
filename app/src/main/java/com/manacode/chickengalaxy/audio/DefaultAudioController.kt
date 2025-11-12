@@ -16,7 +16,14 @@ class DefaultAudioController @Inject constructor(
 ) : AudioController {
 
     private enum class MusicChannel { MENU, GAME }
-    private enum class SoundEffect { NOT_ENOUGH_MONEY, GETHIT, SHOT, COLLECT,EXPLOSION, WIN }
+    private enum class SoundEffect {
+        NOT_ENOUGH_MONEY,
+        PLAYER_HIT,
+        PLAYER_SHOT,
+        EGG_COLLECT,
+        ENEMY_EXPLOSION,
+        WIN
+    }
 
     private val soundPool: SoundPool = SoundPool.Builder()
         .setMaxStreams(6)
@@ -30,11 +37,11 @@ class DefaultAudioController @Inject constructor(
 
     private val effectToName = mapOf(
         SoundEffect.NOT_ENOUGH_MONEY to "sfx_no_money",
-        SoundEffect.GETHIT to "sfx_get_damage",
-        SoundEffect.SHOT to "sfx_sfx_shot",
-        SoundEffect.EXPLOSION to "sfx_blast",
-        SoundEffect.COLLECT to "sfx_item_collect",
-        SoundEffect.WIN to "sfx_game_win",
+        SoundEffect.PLAYER_HIT to "sfx_get_damage",
+        SoundEffect.PLAYER_SHOT to "sfx_shot",
+        SoundEffect.ENEMY_EXPLOSION to "sfx_blast",
+        SoundEffect.EGG_COLLECT to "sfx_item_collect",
+        SoundEffect.WIN to "sfx_win",
     )
 
     private val effectToResId = effectToName.mapValues { resolveRaw(it.value) }
@@ -124,6 +131,34 @@ class DefaultAudioController @Inject constructor(
 
     override fun setSoundVolume(percent: Int) {
         soundVolume = percent.toVolume()
+    }
+
+    override fun playMagnetPurchase() {
+        playEffect(SoundEffect.EGG_COLLECT)
+    }
+
+    override fun playNotEnoughMoney() {
+        playEffect(SoundEffect.NOT_ENOUGH_MONEY)
+    }
+
+    override fun playShot() {
+        playEffect(SoundEffect.PLAYER_SHOT)
+    }
+
+    override fun playExplosion() {
+        playEffect(SoundEffect.ENEMY_EXPLOSION)
+    }
+
+    override fun playCollect() {
+        playEffect(SoundEffect.EGG_COLLECT)
+    }
+
+    override fun playGetHit() {
+        playEffect(SoundEffect.PLAYER_HIT)
+    }
+
+    override fun playWin() {
+        playEffect(SoundEffect.WIN)
     }
 
 

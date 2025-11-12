@@ -87,8 +87,10 @@ class GameViewModel : ViewModel() {
     }
 
     fun fire() {
+        var fired = false
         _state.update { state ->
             if (!state.phase.isControllable() || state.energy < 0.15f) return@update state
+            fired = true
             val bullet = GameEntity(
                 id = nextId(),
                 kind = EntityKind.Bullet,
@@ -101,6 +103,9 @@ class GameViewModel : ViewModel() {
                 bullets = state.bullets + bullet,
                 energy = (state.energy - 0.15f).coerceAtLeast(0f)
             )
+        }
+        if (fired) {
+            viewModelScope.launch { _events.emit(GameEvent.PlayerShot) }
         }
     }
 
@@ -115,20 +120,29 @@ class GameViewModel : ViewModel() {
     }
 
     private fun applyTick(delta: Float) {
-        var gameOverResult: GameResult? = null
+        val emittedEvents = mutableListOf<GameEvent>()
         _state.update { state ->
-            if (state.phase != GamePhase.Running) return@update state.copy(stars = updateStars(state.stars, delta))
+            if (state.phase != GamePhase.Running) {
+                return@update state.copy(stars = updateStars(state.stars, delta))
+            }
 
-            val updated = step(state, delta)
-            gameOverResult = updated.result.takeIf { updated.phase == GamePhase.Result }
-            updated
+            val outcome = step(state, delta)
+            emittedEvents += outcome.events
+            outcome.state
         }
-        gameOverResult?.let { result ->
-            viewModelScope.launch { _events.emit(GameEvent.GameOver(result)) }
+        if (emittedEvents.isNotEmpty()) {
+            viewModelScope.launch {
+                emittedEvents.forEach { event -> _events.emit(event) }
+            }
         }
     }
 
-    private fun step(state: GameUiState, delta: Float): GameUiState {
+    private data class StepOutcome(
+        val state: GameUiState,
+        val events: List<GameEvent>
+    )
+
+    private fun step(state: GameUiState, delta: Float): StepOutcome {
         val stars = updateStars(state.stars, delta)
 
         var energy = (state.energy + delta * 0.12f).coerceAtMost(1f)
@@ -136,6 +150,8 @@ class GameViewModel : ViewModel() {
         var bonusEggs = state.bonusEggs
         var enemiesDown = state.enemiesDown
         var lives = state.lives
+
+        val events = mutableListOf<GameEvent>()
 
         val explosions = state.explosions
             .map { it.copy(age = it.age + delta) }
@@ -202,6 +218,7 @@ class GameViewModel : ViewModel() {
                     score += 90
                     enemiesDown += 1
                     energy = (energy + 0.05f).coerceAtMost(1f)
+                    events += GameEvent.EnemyDestroyed
                     break
                 }
             }
@@ -237,7 +254,11 @@ class GameViewModel : ViewModel() {
         enemies.forEach { enemy ->
             val reachedBottom = enemy.y >= 0.98f
             if (reachedBottom || collides(enemy, playerEntity)) {
-                lives = max(0, lives - 1)
+                val newLives = max(0, lives - 1)
+                if (newLives < lives) {
+                    events += GameEvent.PlayerHit
+                }
+                lives = newLives
             } else {
                 remainingEnemies += enemy
             }
@@ -245,7 +266,11 @@ class GameViewModel : ViewModel() {
 
         enemyBullets.forEach { bullet ->
             if (collides(bullet, playerEntity)) {
-                lives = max(0, lives - 1)
+                val newLives = max(0, lives - 1)
+                if (newLives < lives) {
+                    events += GameEvent.PlayerHit
+                }
+                lives = newLives
             } else {
                 remainingEnemyBullets += bullet
             }
@@ -257,6 +282,7 @@ class GameViewModel : ViewModel() {
                 bonusEggs += 1
                 score += 120
                 energy = (energy + 0.18f).coerceAtMost(1f)
+                events += GameEvent.EggCollected
             } else {
                 remainingEggs += egg
             }
@@ -330,21 +356,27 @@ class GameViewModel : ViewModel() {
             enemies = remainingEnemies,
             enemyBullets = remainingEnemyBullets,
             eggs = remainingEggs,
-            explosions = explosions
+            explosions = explosions,
+            result = null
         )
 
         return if (lives <= 0) {
-            runningState.copy(
-                phase = GamePhase.Result,
-                result = GameResult(
-                    score = score,
-                    timeSeconds = timeSeconds,
-                    bonusEggs = bonusEggs,
-                    enemiesDown = enemiesDown
-                )
+            val result = GameResult(
+                score = score,
+                timeSeconds = timeSeconds,
+                bonusEggs = bonusEggs,
+                enemiesDown = enemiesDown
+            )
+            events += GameEvent.GameOver(result)
+            StepOutcome(
+                state = runningState.copy(
+                    phase = GamePhase.Result,
+                    result = result
+                ),
+                events = events
             )
         } else {
-            runningState
+            StepOutcome(runningState, events)
         }
     }
 
@@ -411,6 +443,10 @@ val GamePhase.isResult: Boolean get() = this == GamePhase.Result
 private fun GamePhase.isControllable(): Boolean = this == GamePhase.Running
 
 sealed interface GameEvent {
+    object PlayerShot : GameEvent
+    object PlayerHit : GameEvent
+    object EnemyDestroyed : GameEvent
+    object EggCollected : GameEvent
     data class GameOver(val result: GameResult) : GameEvent
 }
 

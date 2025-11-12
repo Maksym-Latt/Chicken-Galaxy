@@ -13,5 +13,9 @@ interface AudioController {
     fun playMagnetPurchase()
     fun playNotEnoughMoney()
 
-
+    fun playShot()
+    fun playExplosion()
+    fun playCollect()
+    fun playGetHit()
+    fun playWin()
 }
