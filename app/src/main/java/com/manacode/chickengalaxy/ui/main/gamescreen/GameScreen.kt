@@ -208,7 +208,20 @@ private fun GameField(
                             width = toDp(bullet.size * 0.6f, basePx, density),
                             height = toDp(bullet.size * 2.8f, basePx, density)
                         )
-                        .offset { toOffset(bullet.x, bullet.y, bullet.size, widthPx, heightPx, basePx) }
+                        .offset { toOffset(bullet.x, bullet.y, bullet.size, widthPx, heightPx, basePx) },
+                    brush = Brush.verticalGradient(listOf(Color(0xFF81D4FA), Color(0xFF0288D1)))
+                )
+            }
+
+            state.enemyBullets.forEach { bullet ->
+                LaserShot(
+                    modifier = Modifier
+                        .size(
+                            width = toDp(bullet.size * 0.6f, basePx, density),
+                            height = toDp(bullet.size * 2.6f, basePx, density)
+                        )
+                        .offset { toOffset(bullet.x, bullet.y, bullet.size, widthPx, heightPx, basePx) },
+                    brush = Brush.verticalGradient(listOf(Color(0xFFFF8A80), Color(0xFFD32F2F)))
                 )
             }
 
@@ -331,11 +344,11 @@ private fun EnemyShip(modifier: Modifier) {
 }
 
 @Composable
-private fun LaserShot(modifier: Modifier) {
+private fun LaserShot(modifier: Modifier, brush: Brush) {
     Box(
         modifier = modifier
             .clip(RoundedLaserShape)
-            .background(Brush.verticalGradient(listOf(Color(0xFF81D4FA), Color(0xFF0288D1))))
+            .background(brush)
     )
 }
 

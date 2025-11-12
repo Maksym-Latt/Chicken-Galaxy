@@ -30,6 +30,7 @@ class GameViewModel : ViewModel() {
     private var entityId: Long = 0L
     private var enemyCooldown = 1.2f
     private var eggCooldown = 2.5f
+    private var enemyShotCooldown = 1.8f
     private var elapsedSecondsFraction = 0f
 
     init {
@@ -44,6 +45,7 @@ class GameViewModel : ViewModel() {
         entityId = 0
         enemyCooldown = 1.2f
         eggCooldown = 2.5f
+        enemyShotCooldown = 1.8f
         elapsedSecondsFraction = 0f
         _state.update {
             initialState().copy(
@@ -134,12 +136,37 @@ class GameViewModel : ViewModel() {
         var lives = state.lives
 
         val bullets = state.bullets
-            .map { it.copy(y = it.y - it.speed * delta) }
-            .filter { it.y > -0.1f }
+            .map { bullet ->
+                val newX = bullet.x + bullet.horizontalSpeed * delta
+                val newY = bullet.y - bullet.speed * delta
+                bullet.copy(x = newX, y = newY)
+            }
+            .filter { it.y > -0.1f && it.x > -0.2f && it.x < 1.2f }
+            .toMutableList()
+
+        val enemyBullets = state.enemyBullets
+            .map { bullet ->
+                val newX = bullet.x + bullet.horizontalSpeed * delta
+                val newY = bullet.y + bullet.speed * delta
+                bullet.copy(x = newX, y = newY)
+            }
+            .filter { it.y < 1.1f && it.x > -0.2f && it.x < 1.2f }
             .toMutableList()
 
         val enemies = state.enemies
-            .map { it.copy(y = it.y + it.speed * delta) }
+            .map { enemy ->
+                var horizontalSpeed = enemy.horizontalSpeed
+                var newX = enemy.x + horizontalSpeed * delta
+                if (newX < 0.08f || newX > 0.92f) {
+                    horizontalSpeed = -horizontalSpeed
+                    newX = newX.coerceIn(0.08f, 0.92f)
+                }
+                enemy.copy(
+                    x = newX,
+                    y = enemy.y + enemy.speed * delta,
+                    horizontalSpeed = horizontalSpeed
+                )
+            }
             .filter { it.y < 1.1f }
             .toMutableList()
 
@@ -150,6 +177,7 @@ class GameViewModel : ViewModel() {
 
         // Bullet collisions
         val remainingBullets = mutableListOf<GameEntity>()
+        val remainingEnemyBullets = mutableListOf<GameEntity>()
         bullets.forEach { bullet ->
             var destroyed = false
             val iterator = enemies.listIterator()
@@ -165,6 +193,19 @@ class GameViewModel : ViewModel() {
                 }
             }
             if (!destroyed) {
+                val enemyBulletIterator = enemyBullets.listIterator()
+                while (enemyBulletIterator.hasNext()) {
+                    val enemyBullet = enemyBulletIterator.next()
+                    if (collides(bullet, enemyBullet)) {
+                        enemyBulletIterator.remove()
+                        destroyed = true
+                        score += 30
+                        energy = (energy + 0.02f).coerceAtMost(1f)
+                        break
+                    }
+                }
+            }
+            if (!destroyed) {
                 remainingBullets += bullet
             }
         }
@@ -177,7 +218,8 @@ class GameViewModel : ViewModel() {
             x = state.playerX,
             y = state.playerY,
             size = state.playerSize,
-            speed = 0f
+            speed = 0f,
+            horizontalSpeed = 0f
         )
         enemies.forEach { enemy ->
             val reachedBottom = enemy.y >= 0.98f
@@ -185,6 +227,14 @@ class GameViewModel : ViewModel() {
                 lives = max(0, lives - 1)
             } else {
                 remainingEnemies += enemy
+            }
+        }
+
+        enemyBullets.forEach { bullet ->
+            if (collides(bullet, playerEntity)) {
+                lives = max(0, lives - 1)
+            } else {
+                remainingEnemyBullets += bullet
             }
         }
 
@@ -209,7 +259,8 @@ class GameViewModel : ViewModel() {
                 x = random.nextFloat().coerceIn(0.1f, 0.9f),
                 y = -0.12f,
                 size = random.nextFloat().coerceIn(0.12f, 0.18f),
-                speed = speed.coerceAtMost(0.45f)
+                speed = speed.coerceAtMost(0.45f),
+                horizontalSpeed = (random.nextFloat() - 0.5f) * 0.45f
             )
             remainingEnemies += spawn
             enemyCooldown = (1.1f - state.timeSeconds * 0.02f).coerceIn(0.35f, 1.0f)
@@ -229,6 +280,24 @@ class GameViewModel : ViewModel() {
             eggCooldown = random.nextDouble(2.5, 4.5).toFloat()
         }
 
+        enemyShotCooldown -= delta
+        if (enemyShotCooldown <= 0f && remainingEnemies.isNotEmpty()) {
+            val shooter = remainingEnemies.random(random)
+            val horizontalSpeed = ((state.playerX - shooter.x) * 0.9f).coerceIn(-0.4f, 0.4f)
+            val bulletSpeed = (0.6f + state.timeSeconds * 0.003f).coerceAtMost(0.95f)
+            val spawn = GameEntity(
+                id = nextId(),
+                kind = EntityKind.EnemyBullet,
+                x = shooter.x,
+                y = shooter.y + shooter.size * 0.6f,
+                size = 0.03f,
+                speed = bulletSpeed,
+                horizontalSpeed = horizontalSpeed
+            )
+            remainingEnemyBullets += spawn
+            enemyShotCooldown = random.nextDouble(0.8, 1.6).toFloat().coerceAtLeast(0.45f)
+        }
+
         elapsedSecondsFraction += delta
         var timeSeconds = state.timeSeconds
         while (elapsedSecondsFraction >= 1f) {
@@ -246,6 +315,7 @@ class GameViewModel : ViewModel() {
             lives = lives,
             bullets = remainingBullets,
             enemies = remainingEnemies,
+            enemyBullets = remainingEnemyBullets,
             eggs = remainingEggs
         )
 
@@ -311,6 +381,7 @@ data class GameUiState(
     val playerSize: Float = 0.18f,
     val enemies: List<GameEntity> = emptyList(),
     val bullets: List<GameEntity> = emptyList(),
+    val enemyBullets: List<GameEntity> = emptyList(),
     val eggs: List<GameEntity> = emptyList(),
     val stars: List<Star> = emptyList(),
     val result: GameResult? = null
@@ -341,10 +412,11 @@ data class GameEntity(
     val x: Float,
     val y: Float,
     val size: Float,
-    val speed: Float
+    val speed: Float,
+    val horizontalSpeed: Float = 0f
 )
 
-enum class EntityKind { Player, Enemy, Bullet, Egg }
+enum class EntityKind { Player, Enemy, Bullet, EnemyBullet, Egg }
 
 data class Star(
     val id: Int,
