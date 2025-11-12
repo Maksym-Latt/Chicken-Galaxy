@@ -7,6 +7,7 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,6 +19,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.matchParentSize
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
@@ -36,12 +38,14 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.withTransform
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.manacode.chickengalaxy.R
 import com.manacode.chickengalaxy.ui.main.component.GradientOutlinedText
 import com.manacode.chickengalaxy.ui.main.component.OrangePrimaryButton
 import com.manacode.chickengalaxy.ui.main.component.SecondaryIconButton
@@ -75,33 +79,47 @@ private fun MenuContent(
     onOpenLeaderboard: () -> Unit,
     onOpenSkins: () -> Unit
 ) {
-    val gradient = remember {
+    val overlay = remember {
         Brush.verticalGradient(
-            0f to Color(0xFF1B1F5C),
-            0.45f to Color(0xFF22114F),
-            1f to Color(0xFF08051E)
+            0f to Color(0x55000000),
+            0.6f to Color(0x33000000),
+            1f to Color(0xAA050414)
         )
     }
     val stars = remember { generateStars(seed = 42, count = 90) }
 
     Surface(color = Color.Transparent) {
         Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(gradient)
-                .padding(horizontal = 24.dp, vertical = 32.dp)
+            modifier = Modifier.fillMaxSize()
         ) {
+            Image(
+                painter = painterResource(id = R.drawable.bg_main),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.matchParentSize()
+            )
+
+            Box(
+                modifier = Modifier
+                    .matchParentSize()
+                    .background(overlay)
+            )
+
             StarLayer(stars)
 
             Column(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 24.dp, vertical = 32.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
                 TopBar(state.points, onOpenLeaderboard)
 
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    ChickenLogo(state.palette)
+                    GameTitle()
+                    Spacer(Modifier.height(12.dp))
+                    PlayerPortrait()
                     Spacer(Modifier.height(24.dp))
                     HeroShipPreview(state.palette)
                 }
@@ -181,24 +199,27 @@ private fun PointsBadge(points: Int) {
 }
 
 @Composable
-private fun ChickenLogo(palette: com.manacode.chickengalaxy.data.player.SkinPalette) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        GradientOutlinedText(
-            text = "CHICKEN",
-            fontSize = 42.sp,
-            gradientColors = listOf(Color.White, Color(0xFFE3F2FD))
-        )
-        GradientOutlinedText(
-            text = "GALAXY",
-            fontSize = 42.sp,
-            gradientColors = listOf(Color(0xFFFFF59D), Color(0xFFFFB74D))
-        )
-    }
+private fun GameTitle() {
+    Image(
+        painter = painterResource(id = R.drawable.title),
+        contentDescription = null,
+        modifier = Modifier.fillMaxWidth(0.8f),
+        contentScale = ContentScale.FillWidth
+    )
+}
+
+@Composable
+private fun PlayerPortrait() {
+    Image(
+        painter = painterResource(id = R.drawable.player),
+        contentDescription = null,
+        modifier = Modifier.fillMaxWidth(0.55f),
+        contentScale = ContentScale.FillWidth
+    )
 }
 
 @Composable
 private fun HeroShipPreview(palette: com.manacode.chickengalaxy.data.player.SkinPalette) {
-    val bodyColor = palette.primary
     val accent = palette.accent
     val glow = Brush.radialGradient(
         listOf(accent.copy(alpha = 0.35f), Color.Transparent)
@@ -214,43 +235,12 @@ private fun HeroShipPreview(palette: com.manacode.chickengalaxy.data.player.Skin
             val radius = size.minDimension / 2.2f
             drawCircle(brush = glow, center = center, radius = radius)
         }
-        Canvas(
-            Modifier
-                .size(180.dp)
-        ) {
-            val width = size.width
-            val height = size.height
-            val noseWidth = width * 0.14f
-            val bodyWidth = width * 0.4f
-            val bodyHeight = height * 0.6f
-            val wingWidth = width * 0.7f
-
-            withTransform({ rotate(degrees = -3f, pivot = Offset(width / 2f, height / 2f)) }) {
-                drawRoundRect(
-                    color = bodyColor,
-                    topLeft = Offset((width - bodyWidth) / 2f, height * 0.25f),
-                    size = androidx.compose.ui.geometry.Size(bodyWidth, bodyHeight),
-                    cornerRadius = androidx.compose.ui.geometry.CornerRadius(bodyWidth / 2f, bodyWidth / 1.4f)
-                )
-                drawRoundRect(
-                    color = accent,
-                    topLeft = Offset(width / 2f - noseWidth / 2f, height * 0.12f),
-                    size = androidx.compose.ui.geometry.Size(noseWidth, height * 0.25f),
-                    cornerRadius = androidx.compose.ui.geometry.CornerRadius(noseWidth / 2f, noseWidth)
-                )
-                drawRoundRect(
-                    color = accent.copy(alpha = 0.8f),
-                    topLeft = Offset((width - wingWidth) / 2f, height * 0.45f),
-                    size = androidx.compose.ui.geometry.Size(wingWidth, height * 0.18f),
-                    cornerRadius = androidx.compose.ui.geometry.CornerRadius(wingWidth / 2f, height * 0.18f)
-                )
-                drawCircle(
-                    color = Color.White.copy(alpha = 0.85f),
-                    radius = width * 0.1f,
-                    center = Offset(width / 2f, height * 0.45f)
-                )
-            }
-        }
+        Image(
+            painter = painterResource(id = R.drawable.player_ship),
+            contentDescription = null,
+            modifier = Modifier.size(180.dp),
+            contentScale = ContentScale.Fit
+        )
     }
 }
 
