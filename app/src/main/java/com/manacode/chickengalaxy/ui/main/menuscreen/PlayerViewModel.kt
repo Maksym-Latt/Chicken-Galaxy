@@ -25,15 +25,46 @@ class PlayerViewModel @Inject constructor(
         val level: Int,
         val price: Int,
         val bonus: String,
-        val description: String
+        val description: String,
+        val energyMultiplier: Float
     )
 
     private val eggBlasterPlan: List<UpgradeTier> = listOf(
-        UpgradeTier(level = 1, price = 0, bonus = "+0% fire rate", description = "Single yolk launcher"),
-        UpgradeTier(level = 2, price = 1200, bonus = "+10% fire rate", description = "Double-yolk barrels"),
-        UpgradeTier(level = 3, price = 2600, bonus = "+20% fire rate", description = "Incubator accelerator"),
-        UpgradeTier(level = 4, price = 4800, bonus = "+30% fire rate", description = "Solar-heated shells"),
-        UpgradeTier(level = 5, price = 8200, bonus = "+45% fire rate", description = "Nebula rail yolks")
+        UpgradeTier(
+            level = 1,
+            price = 0,
+            bonus = "+0% fire rate",
+            description = "Single yolk launcher",
+            energyMultiplier = 1f
+        ),
+        UpgradeTier(
+            level = 2,
+            price = 1200,
+            bonus = "+10% fire rate",
+            description = "Double-yolk barrels",
+            energyMultiplier = 0.9f
+        ),
+        UpgradeTier(
+            level = 3,
+            price = 2600,
+            bonus = "+20% fire rate",
+            description = "Incubator accelerator",
+            energyMultiplier = 0.8f
+        ),
+        UpgradeTier(
+            level = 4,
+            price = 4800,
+            bonus = "+30% fire rate",
+            description = "Solar-heated shells",
+            energyMultiplier = 0.7f
+        ),
+        UpgradeTier(
+            level = 5,
+            price = 8200,
+            bonus = "+45% fire rate",
+            description = "Nebula rail yolks",
+            energyMultiplier = 0.5f
+        )
     )
 
     val ui: StateFlow<PlayerUiState> =
@@ -49,6 +80,7 @@ class PlayerViewModel @Inject constructor(
                 required = repo.requiredForLevel(state.playerLevel),
                 eggBlasterLevel = state.eggBlasterLevel,
                 eggBlasterBonus = eggCurrent.bonus,
+                eggBlasterEnergyMultiplier = eggCurrent.energyMultiplier,
                 eggBlasterDescription = eggCurrent.description,
                 eggBlasterNextCost = eggNext?.price,
                 palette = palette
