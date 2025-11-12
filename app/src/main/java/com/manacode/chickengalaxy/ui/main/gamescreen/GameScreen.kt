@@ -27,7 +27,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -66,6 +65,7 @@ fun GameScreen(
     playerVm: PlayerViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val playerState by playerVm.ui.collectAsStateWithLifecycle()
     val audio = rememberAudioController()
 
     LaunchedEffect(Unit) {
@@ -144,6 +144,8 @@ fun GameScreen(
             state.result?.let { result ->
                 WinOverlay(
                     result = result,
+                    totalPoints = playerState.points,
+                    gainedPoints = result.score + result.bonusEggs * 50,
                     onPlayAgain = {
                         audio.playGameMusic()
                         viewModel.startRun()
