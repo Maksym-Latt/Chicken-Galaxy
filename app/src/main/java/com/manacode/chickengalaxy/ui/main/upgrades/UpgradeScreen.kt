@@ -1,6 +1,7 @@
 package com.manacode.chickengalaxy.ui.main.upgrades
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.border
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.matchParentSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -27,11 +29,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.manacode.chickengalaxy.R
 import com.manacode.chickengalaxy.ui.main.component.GradientOutlinedText
 import com.manacode.chickengalaxy.ui.main.component.OrangePrimaryButton
 import com.manacode.chickengalaxy.ui.main.component.SecondaryBackButton
@@ -48,20 +52,31 @@ fun UpgradeScreen(
     val state by playerVm.ui.collectAsStateWithLifecycle()
     var showNoMoney by remember { mutableStateOf(false) }
 
-    val background = remember {
+    val overlay = remember {
         Brush.verticalGradient(
-            0f to Color(0xFF101531),
-            0.4f to Color(0xFF15103A),
-            1f to Color(0xFF040313)
+            0f to Color(0x66000000),
+            0.55f to Color(0x33000000),
+            1f to Color(0xAA050414)
         )
     }
     val stars = remember { generateUpgradeStars() }
 
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(background)
+        modifier = Modifier.fillMaxSize()
     ) {
+        Image(
+            painter = painterResource(id = R.drawable.bg_main),
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.matchParentSize()
+        )
+
+        Box(
+            modifier = Modifier
+                .matchParentSize()
+                .background(overlay)
+        )
+
         StarBackdrop(stars)
 
         Column(
@@ -78,6 +93,9 @@ fun UpgradeScreen(
                 fontSize = 32.sp,
                 gradientColors = listOf(Color.White, Color(0xFFB3E5FC))
             )
+            Spacer(Modifier.height(18.dp))
+
+            HangarShipArt()
             Spacer(Modifier.height(18.dp))
 
             UpgradeCard(
@@ -123,6 +141,33 @@ fun UpgradeScreen(
         if (showNoMoney) {
             NoMoneyDialog(onDismiss = { showNoMoney = false })
         }
+    }
+}
+
+@Composable
+private fun HangarShipArt() {
+    Box(
+        modifier = Modifier
+            .size(220.dp)
+            .padding(bottom = 8.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Canvas(Modifier.matchParentSize()) {
+            val center = androidx.compose.ui.geometry.Offset(size.width / 2f, size.height / 2f)
+            drawCircle(
+                brush = Brush.radialGradient(
+                    listOf(Color(0x6688C6FF), Color.Transparent)
+                ),
+                radius = size.minDimension / 2.1f,
+                center = center
+            )
+        }
+        Image(
+            painter = painterResource(id = R.drawable.ship),
+            contentDescription = null,
+            modifier = Modifier.fillMaxSize(0.8f),
+            contentScale = ContentScale.Fit
+        )
     }
 }
 

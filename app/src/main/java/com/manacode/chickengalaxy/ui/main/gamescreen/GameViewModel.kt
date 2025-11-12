@@ -16,6 +16,8 @@ import kotlin.math.hypot
 import kotlin.math.max
 import kotlin.random.Random
 
+private const val EXPLOSION_DURATION = 0.6f
+
 class GameViewModel : ViewModel() {
 
     private val random = Random(System.currentTimeMillis())
@@ -135,6 +137,11 @@ class GameViewModel : ViewModel() {
         var enemiesDown = state.enemiesDown
         var lives = state.lives
 
+        val explosions = state.explosions
+            .map { it.copy(age = it.age + delta) }
+            .filter { it.age < EXPLOSION_DURATION }
+            .toMutableList()
+
         val bullets = state.bullets
             .map { bullet ->
                 val newX = bullet.x + bullet.horizontalSpeed * delta
@@ -185,6 +192,12 @@ class GameViewModel : ViewModel() {
                 val enemy = iterator.next()
                 if (collides(bullet, enemy)) {
                     iterator.remove()
+                    explosions += Explosion(
+                        id = nextId(),
+                        x = enemy.x,
+                        y = enemy.y,
+                        size = enemy.size
+                    )
                     destroyed = true
                     score += 90
                     enemiesDown += 1
@@ -316,7 +329,8 @@ class GameViewModel : ViewModel() {
             bullets = remainingBullets,
             enemies = remainingEnemies,
             enemyBullets = remainingEnemyBullets,
-            eggs = remainingEggs
+            eggs = remainingEggs,
+            explosions = explosions
         )
 
         return if (lives <= 0) {
@@ -384,6 +398,7 @@ data class GameUiState(
     val enemyBullets: List<GameEntity> = emptyList(),
     val eggs: List<GameEntity> = emptyList(),
     val stars: List<Star> = emptyList(),
+    val explosions: List<Explosion> = emptyList(),
     val result: GameResult? = null
 )
 
@@ -397,6 +412,16 @@ private fun GamePhase.isControllable(): Boolean = this == GamePhase.Running
 
 sealed interface GameEvent {
     data class GameOver(val result: GameResult) : GameEvent
+}
+
+data class Explosion(
+    val id: Long,
+    val x: Float,
+    val y: Float,
+    val size: Float,
+    val age: Float = 0f
+) {
+    val progress: Float get() = age / EXPLOSION_DURATION
 }
 
 data class GameResult(

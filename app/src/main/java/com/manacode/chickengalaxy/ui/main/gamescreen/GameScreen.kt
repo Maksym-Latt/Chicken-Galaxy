@@ -2,6 +2,7 @@ package com.manacode.chickengalaxy.ui.main.gamescreen
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -11,10 +12,10 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.matchParentSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -33,9 +34,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
@@ -44,6 +46,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.manacode.chickengalaxy.R
 import com.manacode.chickengalaxy.audio.rememberAudioController
 import com.manacode.chickengalaxy.ui.main.component.GradientOutlinedText
 import com.manacode.chickengalaxy.ui.main.component.SecondaryIconButton
@@ -166,18 +169,9 @@ private fun GameField(
         val heightPx = with(density) { maxHeight.toPx() }
         val basePx = min(widthPx, heightPx)
 
-        val background = remember {
-            Brush.verticalGradient(
-                0f to Color(0xFF050B27),
-                0.5f to Color(0xFF0A163D),
-                1f to Color(0xFF050513)
-            )
-        }
-
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(background)
                 .pointerInput(state.phase) {
                     if (state.phase.isControllable()) {
                         detectDragGestures { change, drag ->
@@ -192,6 +186,13 @@ private fun GameField(
                     }
                 }
         ) {
+            Image(
+                painter = painterResource(id = R.drawable.bg_game),
+                contentDescription = null,
+                contentScale = androidx.compose.ui.layout.ContentScale.Crop,
+                modifier = Modifier.matchParentSize()
+            )
+
             StarLayer(state.stars)
 
             val playerSize = toDp(state.playerSize, basePx, density)
@@ -202,33 +203,34 @@ private fun GameField(
             )
 
             state.bullets.forEach { bullet ->
-                LaserShot(
+                ShotSprite(
                     modifier = Modifier
                         .size(
-                            width = toDp(bullet.size * 0.6f, basePx, density),
-                            height = toDp(bullet.size * 2.8f, basePx, density)
+                            width = toDp(bullet.size * 0.8f, basePx, density),
+                            height = toDp(bullet.size * 3.2f, basePx, density)
                         )
                         .offset { toOffset(bullet.x, bullet.y, bullet.size, widthPx, heightPx, basePx) },
-                    brush = Brush.verticalGradient(listOf(Color(0xFF81D4FA), Color(0xFF0288D1)))
+                    resId = R.drawable.our_shot
                 )
             }
 
             state.enemyBullets.forEach { bullet ->
-                LaserShot(
+                ShotSprite(
                     modifier = Modifier
                         .size(
-                            width = toDp(bullet.size * 0.6f, basePx, density),
-                            height = toDp(bullet.size * 2.6f, basePx, density)
+                            width = toDp(bullet.size * 0.8f, basePx, density),
+                            height = toDp(bullet.size * 3f, basePx, density)
                         )
                         .offset { toOffset(bullet.x, bullet.y, bullet.size, widthPx, heightPx, basePx) },
-                    brush = Brush.verticalGradient(listOf(Color(0xFFFF8A80), Color(0xFFD32F2F)))
+                    resId = R.drawable.enemy_shot,
+                    rotation = 180f
                 )
             }
 
             state.eggs.forEach { egg ->
                 EggPickup(
                     modifier = Modifier
-                        .size(toDp(egg.size, basePx, density))
+                        .size(toDp(egg.size * 1.1f, basePx, density))
                         .offset { toOffset(egg.x, egg.y, egg.size, widthPx, heightPx, basePx) }
                 )
             }
@@ -236,8 +238,18 @@ private fun GameField(
             state.enemies.forEach { enemy ->
                 EnemyShip(
                     modifier = Modifier
-                        .size(toDp(enemy.size * 1.4f, basePx, density))
+                        .size(toDp(enemy.size * 1.6f, basePx, density))
                         .offset { toOffset(enemy.x, enemy.y, enemy.size, widthPx, heightPx, basePx) }
+                )
+            }
+
+            state.explosions.forEach { explosion ->
+                val spriteSize = explosion.size * 2.2f
+                ExplosionEffect(
+                    modifier = Modifier
+                        .size(toDp(spriteSize, basePx, density))
+                        .offset { toOffset(explosion.x, explosion.y, spriteSize, widthPx, heightPx, basePx) },
+                    progress = explosion.progress
                 )
             }
         }
@@ -275,99 +287,59 @@ private fun StarLayer(stars: List<Star>) {
 
 @Composable
 private fun PlayerShip(modifier: Modifier) {
-    Canvas(modifier) {
-        val width = size.width
-        val height = size.height
-        val center = Offset(width / 2f, height / 2f)
-        val bodyWidth = width * 0.45f
-        val wingWidth = width * 0.8f
-
-        drawCircle(
-            brush = Brush.radialGradient(
-                colors = listOf(Color(0xFF68E1FF), Color.Transparent)
-            ),
-            radius = width * 0.55f,
-            center = center,
-            alpha = 0.35f
-        )
-
-        val path = Path().apply {
-            moveTo(center.x, height * 0.05f)
-            lineTo(center.x + bodyWidth / 2f, height * 0.7f)
-            lineTo(center.x, height * 0.95f)
-            lineTo(center.x - bodyWidth / 2f, height * 0.7f)
-            close()
-        }
-        drawPath(path, color = Color(0xFFFFF176))
-
-        drawRoundRect(
-            color = Color(0xFFFFC107),
-            topLeft = Offset((width - wingWidth) / 2f, height * 0.42f),
-            size = androidx.compose.ui.geometry.Size(wingWidth, height * 0.22f),
-            cornerRadius = androidx.compose.ui.geometry.CornerRadius(width * 0.18f, width * 0.18f)
-        )
-
-        drawCircle(
-            color = Color(0xFF0D47A1),
-            radius = width * 0.13f,
-            center = Offset(center.x, height * 0.48f)
-        )
-        drawCircle(
-            color = Color.White,
-            radius = width * 0.07f,
-            center = Offset(center.x - width * 0.03f, height * 0.46f)
-        )
-    }
+    Image(
+        painter = painterResource(id = R.drawable.player_ship),
+        contentDescription = null,
+        modifier = modifier,
+        contentScale = androidx.compose.ui.layout.ContentScale.Fit
+    )
 }
 
 @Composable
 private fun EnemyShip(modifier: Modifier) {
-    Canvas(modifier) {
-        val width = size.width
-        val height = size.height
-        val base = Path().apply {
-            moveTo(width / 2f, 0f)
-            lineTo(width, height * 0.6f)
-            lineTo(width * 0.78f, height)
-            lineTo(width * 0.22f, height)
-            lineTo(0f, height * 0.6f)
-            close()
-        }
-        drawPath(base, Brush.verticalGradient(listOf(Color(0xFFEF5350), Color(0xFFB71C1C))))
-        drawLine(
-            color = Color.White.copy(alpha = 0.4f),
-            start = Offset(width * 0.2f, height * 0.62f),
-            end = Offset(width * 0.8f, height * 0.62f),
-            strokeWidth = width * 0.05f
-        )
-    }
-}
-
-@Composable
-private fun LaserShot(modifier: Modifier, brush: Brush) {
-    Box(
-        modifier = modifier
-            .clip(RoundedLaserShape)
-            .background(brush)
+    Image(
+        painter = painterResource(id = R.drawable.enemy),
+        contentDescription = null,
+        modifier = modifier.graphicsLayer { rotationZ = 180f },
+        contentScale = androidx.compose.ui.layout.ContentScale.Fit
     )
 }
 
-private val RoundedLaserShape = androidx.compose.foundation.shape.RoundedCornerShape(50)
+@Composable
+private fun ShotSprite(modifier: Modifier, resId: Int, rotation: Float = 0f) {
+    Image(
+        painter = painterResource(id = resId),
+        contentDescription = null,
+        modifier = modifier.graphicsLayer { rotationZ = rotation },
+        contentScale = androidx.compose.ui.layout.ContentScale.FillBounds
+    )
+}
 
 @Composable
 private fun EggPickup(modifier: Modifier) {
-    Canvas(modifier) {
-        drawOval(
-            color = Color(0xFFFFF9C4),
-            topLeft = Offset.Zero,
-            size = size
-        )
-        drawOval(
-            color = Color.White.copy(alpha = 0.6f),
-            topLeft = Offset(size.width * 0.2f, size.height * 0.15f),
-            size = androidx.compose.ui.geometry.Size(size.width * 0.35f, size.height * 0.4f)
-        )
-    }
+    Image(
+        painter = painterResource(id = R.drawable.egg),
+        contentDescription = null,
+        modifier = modifier,
+        contentScale = androidx.compose.ui.layout.ContentScale.Fit
+    )
+}
+
+@Composable
+private fun ExplosionEffect(modifier: Modifier, progress: Float) {
+    val clamped = progress.coerceIn(0f, 1f)
+    val scale = 0.6f + (1f - clamped) * 0.6f
+    val alpha = 1f - clamped
+    Image(
+        painter = painterResource(id = R.drawable.blast),
+        contentDescription = null,
+        modifier = modifier.graphicsLayer {
+            scaleX = scale
+            scaleY = scale
+            this.alpha = alpha
+        },
+        contentScale = androidx.compose.ui.layout.ContentScale.Fit
+    )
 }
 
 @Composable
@@ -427,24 +399,21 @@ private fun LivesRow(lives: Int, total: Int) {
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         repeat(total) { index ->
             val filled = index < lives
-            EggLifeIcon(filled = filled)
+            HeartIcon(filled = filled)
         }
     }
 }
 
 @Composable
-private fun EggLifeIcon(filled: Boolean) {
-    val color = if (filled) Color(0xFFFFF59D) else Color(0x33FFF59D)
-    Canvas(Modifier.size(28.dp)) {
-        drawOval(color = color, topLeft = Offset.Zero, size = size)
-        if (filled) {
-            drawOval(
-                color = Color.White.copy(alpha = 0.5f),
-                topLeft = Offset(size.width * 0.25f, size.height * 0.2f),
-                size = androidx.compose.ui.geometry.Size(size.width * 0.35f, size.height * 0.4f)
-            )
-        }
-    }
+private fun HeartIcon(filled: Boolean) {
+    Image(
+        painter = painterResource(id = R.drawable.heart),
+        contentDescription = null,
+        modifier = Modifier
+            .size(28.dp)
+            .graphicsLayer { alpha = if (filled) 1f else 0.35f },
+        contentScale = androidx.compose.ui.layout.ContentScale.Fit
+    )
 }
 
 @Composable
