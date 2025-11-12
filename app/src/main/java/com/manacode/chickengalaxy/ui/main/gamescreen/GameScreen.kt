@@ -77,6 +77,10 @@ fun GameScreen(
         viewModel.showIntroOnEnter()
     }
 
+    LaunchedEffect(playerState.eggBlasterEnergyMultiplier) {
+        viewModel.setShotEnergyMultiplier(playerState.eggBlasterEnergyMultiplier)
+    }
+
     // ----------------------- Pause on App Background -----------------------
     val lifecycleOwner = LocalLifecycleOwner.current
 

@@ -17,6 +17,7 @@ import kotlin.math.max
 import kotlin.random.Random
 
 private const val EXPLOSION_DURATION = 0.6f
+private const val BASE_SHOT_ENERGY_COST = 0.25f
 
 class GameViewModel : ViewModel() {
 
@@ -34,6 +35,7 @@ class GameViewModel : ViewModel() {
     private var eggCooldown = 2.5f
     private var enemyShotCooldown = 1.8f
     private var elapsedSecondsFraction = 0f
+    private var shotEnergyMultiplier = 1f
 
     init {
         startTickLoop()
@@ -89,7 +91,8 @@ class GameViewModel : ViewModel() {
     fun fire() {
         var fired = false
         _state.update { state ->
-            if (!state.phase.isControllable() || state.energy < 0.15f) return@update state
+            val energyCost = BASE_SHOT_ENERGY_COST * shotEnergyMultiplier
+            if (!state.phase.isControllable() || state.energy < energyCost) return@update state
             fired = true
             val bullet = GameEntity(
                 id = nextId(),
@@ -101,12 +104,16 @@ class GameViewModel : ViewModel() {
             )
             state.copy(
                 bullets = state.bullets + bullet,
-                energy = (state.energy - 0.15f).coerceAtLeast(0f)
+                energy = (state.energy - energyCost).coerceAtLeast(0f)
             )
         }
         if (fired) {
             viewModelScope.launch { _events.emit(GameEvent.PlayerShot) }
         }
+    }
+
+    fun setShotEnergyMultiplier(multiplier: Float) {
+        shotEnergyMultiplier = multiplier.coerceIn(0.1f, 1f)
     }
 
     private fun startTickLoop() {
