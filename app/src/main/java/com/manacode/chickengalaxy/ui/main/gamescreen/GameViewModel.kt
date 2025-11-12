@@ -424,7 +424,7 @@ data class GameUiState(
     val enemiesDown: Int = 0,
     val playerX: Float = 0.5f,
     val playerY: Float = 0.8f,
-    val playerSize: Float = 0.18f,
+    val playerSize: Float = 0.28f,
     val enemies: List<GameEntity> = emptyList(),
     val bullets: List<GameEntity> = emptyList(),
     val enemyBullets: List<GameEntity> = emptyList(),

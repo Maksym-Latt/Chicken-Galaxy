@@ -88,14 +88,8 @@ fun WinOverlay(
                     widthScale = 1.4f,
                     modifier = Modifier.onGloballyPositioned { badgeWidthPx = it.size.width }
                 )
-                PointsGainRow(
-                    amount = gainedPoints,
-                    modifier = Modifier
-                        .width(badgeWidthDp)
-                        .padding(end = 4.dp)
-                )
                 EggsGainRow(
-                    amount = result.bonusEggs,
+                    amount = gainedPoints,
                     modifier = Modifier
                         .width(badgeWidthDp)
                         .padding(end = 4.dp)
@@ -167,48 +161,4 @@ private fun EggsGainRow(
             modifier = Modifier.size(18.dp)
         )
     }
-}
-
-// ----------------------- +Points compact row -----------------------
-@Composable
-private fun PointsGainRow(
-    amount: Int,
-    modifier: Modifier = Modifier
-) {
-    Row(
-        modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.End
-    ) {
-        Text(
-            text = "POINTS",
-            color = Color(0xFFB3C6FF),
-            fontSize = 14.sp,
-            modifier = Modifier.padding(end = 8.dp)
-        )
-        GradientOutlinedTextShort(
-            text = "+${formatScoreFixed(amount)} pts",
-            fontSize = 18.sp,
-            strokeWidth = 3f,
-            gradientColors = listOf(Color.White, Color(0xFFE3F2FD)),
-            modifier = Modifier.wrapContentWidth()
-        )
-    }
-}
-
-@Composable
-private fun ResultRow(label: String, value: String) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Text(text = label, color = Color(0xFFB3C6FF), fontSize = 16.sp)
-        Text(text = value, color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.Bold)
-    }
-}
-
-private fun formatTime(totalSeconds: Int): String {
-    val minutes = totalSeconds / 60
-    val seconds = totalSeconds % 60
-    return "%02d:%02d".format(minutes, seconds)
 }

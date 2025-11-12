@@ -19,12 +19,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -43,6 +45,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.manacode.chickengalaxy.R
@@ -70,6 +75,23 @@ fun GameScreen(
 
     LaunchedEffect(Unit) {
         viewModel.showIntroOnEnter()
+    }
+
+    // ----------------------- Pause on App Background -----------------------
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_PAUSE) {
+
+                val current = viewModel.state.value
+                if (current.phase == GamePhase.Running) {
+                    viewModel.pause()
+                }
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
     }
 
     LaunchedEffect(audio) {
@@ -213,11 +235,12 @@ private fun GameField(
                 ShotSprite(
                     modifier = Modifier
                         .size(
-                            width = toDp(bullet.size * 0.8f, basePx, density),
-                            height = toDp(bullet.size * 3.2f, basePx, density)
+                            width = toDp(bullet.size * 1.5f, basePx, density),
+                            height = toDp(bullet.size * 2f, basePx, density)
                         )
                         .offset { toOffset(bullet.x, bullet.y, bullet.size, widthPx, heightPx, basePx) },
-                    resId = R.drawable.our_shot
+                    resId = R.drawable.our_shot,
+                    rotation = 90f
                 )
             }
 
@@ -225,12 +248,12 @@ private fun GameField(
                 ShotSprite(
                     modifier = Modifier
                         .size(
-                            width = toDp(bullet.size * 0.8f, basePx, density),
-                            height = toDp(bullet.size * 3f, basePx, density)
+                            width = toDp(bullet.size * 1.5f, basePx, density),
+                            height = toDp(bullet.size * 2f, basePx, density)
                         )
                         .offset { toOffset(bullet.x, bullet.y, bullet.size, widthPx, heightPx, basePx) },
                     resId = R.drawable.enemy_shot,
-                    rotation = 180f
+                    rotation =  270f
                 )
             }
 
@@ -348,7 +371,7 @@ private fun ExplosionEffect(modifier: Modifier, progress: Float) {
         contentScale = androidx.compose.ui.layout.ContentScale.Fit
     )
 }
-
+// ----------------------- Scoreboard -----------------------
 @Composable
 private fun Scoreboard(
     state: GameUiState,
@@ -373,20 +396,54 @@ private fun Scoreboard(
                     modifier = Modifier.fillMaxSize(0.85f)
                 )
             }
-
-            ScoreBadge(points = state.score)
+            ScoreBadge(points = state.score, widthScale = 1.4f)
         }
 
-        LivesRow(lives = state.lives, total = 3)
-
-        EnergyBar(progress = state.energy)
-
+        // ----------------------- ПРАВА панель: життя, енергія, чіпи -----------------------
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalAlignment = Alignment.Top
         ) {
-            StatChip(title = "Time", value = formatTime(state.timeSeconds))
-            StatChip(title = "Eggs", value = state.bonusEggs.toString())
+            Spacer(Modifier.weight(1f)) // штовхаємо панель у правий край
+            RightStatsPanel(state = state)
+        }
+    }
+}
+
+// ----------------------- Права панель -----------------------
+@Composable
+private fun RightStatsPanel(
+    state: GameUiState,
+    panelWidth: Dp = 200.dp
+) {
+    Column(
+        modifier = Modifier.width(panelWidth),
+        horizontalAlignment = Alignment.End,
+        verticalArrangement = Arrangement.spacedBy(10.dp)
+    ) {
+        // Lives — вирівнюємо вправо через контейнер
+        Box(
+            modifier = Modifier.fillMaxWidth(),
+            contentAlignment = Alignment.CenterEnd
+        ) {
+            LivesRow(lives = state.lives, total = 3)
+        }
+
+        // Energy — всередині свого контейнера fillMaxWidth() дає ширину панелі
+        Box(modifier = Modifier.fillMaxWidth()) {
+            EnergyBar(progress = state.energy)
+        }
+
+        // Чіпи — щільно справа
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Spacer(Modifier.weight(1f))
+            StatChip(title = "Time",    value = formatTime(state.timeSeconds))
+            StatChip(title = "Eggs",    value = state.bonusEggs.toString())
             StatChip(title = "Enemies", value = state.enemiesDown.toString())
         }
     }

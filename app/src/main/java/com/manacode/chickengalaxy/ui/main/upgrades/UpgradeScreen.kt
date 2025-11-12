@@ -256,30 +256,22 @@ private fun EggUpgradeCard(
             BonusChip(text = bonus)
 
             // ----------------------- Опис -----------------------
-            Text(
+            GradientOutlinedTextShort(
                 text = description,
-                color = Color(0xFFD7E0FF),
+                gradientColors = listOf(Color(0xFFFFFFFF), Color(0xFFFFFFFF)),
                 fontSize = 12.sp,
-                lineHeight = 16.sp
             )
 
             // ----------------------- Ціна / залишок / кнопка -----------------------
             if (cost != null) {
                 val canAfford = currentPoints >= cost
-                val remaining = (currentPoints - cost).coerceAtLeast(0)
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    PriceRowEggs(label = "Cost", amount = cost)
-                    if (canAfford) {
-                        PriceRowEggs(label = "After purchase", amount = remaining, labelColor = Color(0xFFB3C6FF))
-                    } else {
-                        PriceRowEggs(label = "Missing", amount = (cost - currentPoints), labelColor = Color(0xFFFF8A80))
-                    }
                     OrangePrimaryButton(
                         text = if (canAfford) "Upgrade" else "Not enough eggs",
                         onClick = if (canAfford) onUpgrade else ({ }),
                         modifier = Modifier
                             .align(Alignment.End)
-                            .fillMaxWidth(0.8f)
+                            .fillMaxWidth()
                     )
                 }
             } else {
@@ -288,7 +280,7 @@ private fun EggUpgradeCard(
                     onClick = {},
                     modifier = Modifier
                         .align(Alignment.End)
-                        .fillMaxWidth(0.7f)
+                        .fillMaxWidth()
                 )
             }
         }
@@ -331,37 +323,6 @@ private fun BonusChip(text: String) {
             strokeWidth = 3f,
             gradientColors = listOf(Color(0xFFFFF59D), Color(0xFFFFB300))
         )
-    }
-}
-
-// ----------------------- Рядок ціни з яйцем -----------------------
-@Composable
-private fun PriceRowEggs(
-    label: String,
-    amount: Int,
-    labelColor: Color = Color(0xFFB3C6FF)
-) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        Text(text = label, color = labelColor, fontSize = 13.sp)
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Image(
-                painter = painterResource(id = R.drawable.egg),
-                contentDescription = null,
-                modifier = Modifier
-                    .size(18.dp)
-                    .offset(y = 1.dp)
-            )
-            Spacer(Modifier.width(6.dp))
-            Text(
-                text = formatScoreFixed(amount), // 1.234.567
-                color = Color.White,
-                fontSize = 15.sp,
-                fontWeight = FontWeight.SemiBold
-            )
-        }
     }
 }
 

@@ -9,12 +9,8 @@ data class PlayerUiState(
     val experience: Int = 0,
     val required: Int = 100,
     val eggBlasterLevel: Int = 1,
-    val featherShieldLevel: Int = 1,
     val eggBlasterBonus: String = "+0% fire rate",
     val eggBlasterDescription: String = "Starter cannon",
-    val featherShieldBonus: String = "+0% shield",
-    val featherShieldDescription: String = "Basic barn door plating",
     val eggBlasterNextCost: Int? = null,
-    val featherShieldNextCost: Int? = null,
     val palette: SkinPalette = SkinPalette(primary = Color(0xFFFFD54F), accent = Color(0xFFFFB300))
 )
